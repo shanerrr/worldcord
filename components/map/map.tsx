@@ -104,9 +104,8 @@ export default function Mapbox() {
         if (features.length) {
           // brk_name
           //iso_a3
-          
-          console.log(features[0])
-          // router.push(`/location/${features[0].properties!.iso_n3}`);
+
+          router.push(`/servers/${features[0].properties!.iso_n3}`);
         }
       });
     });

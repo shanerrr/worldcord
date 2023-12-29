@@ -1,15 +1,9 @@
-import { initalProfile, findServer } from "@worldcord/lib/inital-profile";
-import { redirect } from "next/navigation";
+import { initalProfile } from "@worldcord/lib/inital-profile";
 
-import Mapbox from "@worldcord/components/custom/map";
+import Mapbox from "@worldcord/components/map/map";
 
 export default async function Inital() {
   const profile = await initalProfile();
-  const server = await findServer(profile);
-
-  if (server) {
-    return redirect(`/locations/${server.id}`);
-  }
 
   return (
     <main className="w-full h-full">

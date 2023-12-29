@@ -1,6 +1,5 @@
 import { currentUser, redirectToSignIn } from "@clerk/nextjs";
 import { db } from "./db";
-import { Profile } from "@prisma/client";
 
 export const initalProfile = async () => {
   const user = await currentUser();
@@ -27,12 +26,15 @@ export const initalProfile = async () => {
   return newProfile;
 };
 
-export const findServer = async (profile: Profile) => {
-  return await db.server.findFirst({
+export const getServer = async (id: string) => {
+  return await db.server.findUnique({
     where: {
-      members: {
-        some: {
-          profileId: profile.id,
+      id,
+    },
+    include: {
+      channels: {
+        orderBy: {
+          createdAt: "asc",
         },
       },
     },
