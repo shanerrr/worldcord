@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { GeistSans } from "geist/font/sans";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "@worldcord/components/providers/theme-provide";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,7 +17,15 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={GeistSans.className}>{children}</body>
+        <body className={GeistSans.className}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            storageKey="worldcord-theme"
+          >
+            {children}
+          </ThemeProvider>
+        </body>
       </html>
     </ClerkProvider>
   );

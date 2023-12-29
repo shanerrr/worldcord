@@ -1,5 +1,11 @@
 import { UserButton } from "@clerk/nextjs";
+import ThemeToggle from "@worldcord/components/ThemeToggle/theme-toggle";
 
 export default function Home() {
-  return <UserButton afterSignOutUrl="/" />;
+  return (
+    <div>
+      <ThemeToggle />
+      <UserButton afterSignOutUrl="/" />
+    </div>
+  );
 }
