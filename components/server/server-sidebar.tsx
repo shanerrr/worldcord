@@ -1,16 +1,25 @@
-import type { Channel } from "@prisma/client";
+import { Profile } from "@prisma/client";
+import { ServerHeader } from "./server-header";
+
+import { ServerWithMembersWithProfiles } from "@worldcord/types";
 
 type ServerSidebarProps = {
-  channels: Channel[];
+  server: ServerWithMembersWithProfiles;
+  profile: Profile | null;
 };
-export default function ServerSidebar({ channels }: ServerSidebarProps) {
+export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
+  const role = profile
+    ? server.members.find((member) => member.profileId === profile!.id)?.role
+    : null;
+
   return (
     <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full">
-      <ul>
+      <ServerHeader server={server} role={role} />
+      {/* <ul>
         {channels.map((channel) => (
           <li key={channel.id}>{channel.name}</li>
-        ))}
-      </ul>
+        ))} */}
+      {/* </ul> */}
     </div>
   );
 }

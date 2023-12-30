@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@worldcord/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { MapState } from "@worldcord/types";
 
 export default function MapDialog({
   data,
@@ -32,7 +33,7 @@ export default function MapDialog({
             />
           </DialogTitle>
           <DialogDescription className="py-4 text-center">
-            Are you sure you want to connect?
+            Are you sure you want to connect to this country?
           </DialogDescription>
           <DialogFooter>
             <Button variant="ghost" onClick={close}>

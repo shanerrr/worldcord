@@ -1,6 +1,8 @@
-import { getServer } from "@worldcord/lib/inital-profile";
-import NavigationHeader from "@worldcord/components/navigation/navigation-header";
+import { redirect } from "next/navigation";
+import { initalServer } from "@worldcord/lib/inital-profile";
 import ServerSidebar from "@worldcord/components/server/server-sidebar";
+import { Profile } from "@prisma/client";
+import { ServerWithMembersWithProfiles } from "@worldcord/types";
 
 export default async function MainLayout({
   params,
@@ -9,15 +11,15 @@ export default async function MainLayout({
   params: { serverId: string };
   children: React.ReactNode;
 }) {
-  const server = await getServer(params.serverId);
-  if (!server) return null;
+  const { profile, server } = await initalServer(params.serverId);
+
+  if (!server) return redirect("/");
 
   return (
     <main className="h-full flex flex-col">
-      <NavigationHeader name={server.name} imageUrl={server.imageUrl} />
       <div className="flex flex-grow">
         <div className="w-60 z-20 fixed h-full">
-          <ServerSidebar channels={server.channels} />
+          <ServerSidebar server={server} profile={profile} />
         </div>
         <div>{children}</div>
       </div>
