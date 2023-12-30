@@ -4,7 +4,7 @@ import { db } from "./db";
 export const initalProfile = async () => {
   const user = await currentUser();
 
-  if (!user) return redirectToSignIn();
+  if (!user) return;
 
   const profile = await db.profile.findUnique({
     where: {

@@ -1,14 +1,20 @@
 "use client";
 import mapboxgl from "mapbox-gl";
-import { useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useEffect, useState } from "react";
 
 import "mapbox-gl/dist/mapbox-gl.css";
+import MapDialog from "./map-dialog";
 
 export default function Mapbox() {
-  const router = useRouter();
   const mapContainer = useRef<null | HTMLDivElement>(null);
   const map = useRef<null | mapboxgl.Map>(null);
+  const [choosenCountry, setChoosenCountry] = useState<MapState>({
+    open: false,
+  });
+
+  const closeDrawer = () => {
+    setChoosenCountry({ ...choosenCountry, open: false });
+  };
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -16,6 +22,7 @@ export default function Mapbox() {
       accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
       container: mapContainer.current as HTMLElement,
       style: "mapbox://styles/shanerr/clqq0n1s500bu01rj25vf2egf",
+      zoom: 3,
     });
 
     map.current.on("style.load", () => {
@@ -104,78 +111,87 @@ export default function Mapbox() {
         if (features.length) {
           // brk_name
           //iso_a3
-
-          router.push(`/servers/${features[0].properties!.iso_n3}`);
+          setChoosenCountry({
+            open: true,
+            name: features[0].properties!.brk_name,
+            iso_a2: features[0].properties!.iso_a2,
+            iso_n3: features[0].properties!.iso_n3,
+          });
+          // router.push(`/servers/${features[0].properties!.iso_n3}`);
         }
       });
+
+      // The following values can be changed to control rotation speed:
+
+      // At low zooms, complete a revolution every two minutes.
+      const secondsPerRevolution = 120;
+      // Above zoom level 5, do not rotate.
+      const maxSpinZoom = 5;
+      // Rotate at intermediate speeds between zoom levels 3 and 5.
+      const slowSpinZoom = 3;
+
+      let userInteracting = false;
+      let spinEnabled = true;
+
+      function spinGlobe() {
+        const zoom = map.current!.getZoom();
+        if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
+          let distancePerSecond = 360 / secondsPerRevolution;
+          if (zoom > slowSpinZoom) {
+            // Slow spinning at higher zooms
+            const zoomDif = (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
+            distancePerSecond *= zoomDif;
+          }
+          const center = map.current!.getCenter();
+          center.lng -= distancePerSecond;
+          // Smoothly animate the map over one second.
+          // When this animation is complete, it calls a 'moveend' event.
+          map.current?.easeTo({ center, duration: 1000, easing: (n) => n });
+        }
+      }
+
+      // Pause spinning on interaction
+      map.current?.on("mousedown", () => {
+        userInteracting = true;
+      });
+
+      // Restart spinning the globe when interaction is complete
+      map.current?.on("mouseup", () => {
+        userInteracting = false;
+        spinGlobe();
+      });
+
+      // These events account for cases where the mouse has moved
+      // off the map, so 'mouseup' will not be fired.
+      map.current?.on("dragend", () => {
+        userInteracting = false;
+        spinGlobe();
+      });
+      map.current?.on("pitchend", () => {
+        userInteracting = false;
+        spinGlobe();
+      });
+      map.current?.on("rotateend", () => {
+        userInteracting = false;
+        spinGlobe();
+      });
+
+      // When animation is complete, start spinning if there is no ongoing interaction
+      map.current?.on("moveend", () => {
+        spinGlobe();
+      });
+
+      spinGlobe();
     });
-
-    // // The following values can be changed to control rotation speed:
-
-    // // At low zooms, complete a revolution every two minutes.
-    // const secondsPerRevolution = 120;
-    // // Above zoom level 5, do not rotate.
-    // const maxSpinZoom = 5;
-    // // Rotate at intermediate speeds between zoom levels 3 and 5.
-    // const slowSpinZoom = 3;
-
-    // let userInteracting = false;
-    // let spinEnabled = true;
-
-    // function spinGlobe() {
-    //   const zoom = map.current!.getZoom();
-    //   if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
-    //     let distancePerSecond = 360 / secondsPerRevolution;
-    //     if (zoom > slowSpinZoom) {
-    //       // Slow spinning at higher zooms
-    //       const zoomDif = (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
-    //       distancePerSecond *= zoomDif;
-    //     }
-    //     const center = map.current!.getCenter();
-    //     center.lng -= distancePerSecond;
-    //     // Smoothly animate the map over one second.
-    //     // When this animation is complete, it calls a 'moveend' event.
-    //     map.current?.easeTo({ center, duration: 1000, easing: (n) => n });
-    //   }
-    // }
-
-    // // Pause spinning on interaction
-    // map.current.on("mousedown", () => {
-    //   userInteracting = true;
-    // });
-
-    // // Restart spinning the globe when interaction is complete
-    // map.current.on("mouseup", () => {
-    //   userInteracting = false;
-    //   spinGlobe();
-    // });
-
-    // // These events account for cases where the mouse has moved
-    // // off the map, so 'mouseup' will not be fired.
-    // map.current.on("dragend", () => {
-    //   userInteracting = false;
-    //   spinGlobe();
-    // });
-    // map.current.on("pitchend", () => {
-    //   userInteracting = false;
-    //   spinGlobe();
-    // });
-    // map.current.on("rotateend", () => {
-    //   userInteracting = false;
-    //   spinGlobe();
-    // });
-
-    // // When animation is complete, start spinning if there is no ongoing interaction
-    // map.current.on("moveend", () => {
-    //   spinGlobe();
-    // });
-
-    // spinGlobe();
-
-    // return () => {
-    //   map.current?.remove();
-    // };
   }, []);
 
-  return <section ref={mapContainer} className="map-container h-full w-full" />;
+  return (
+    <section className="h-full w-full relative">
+      <div
+        ref={mapContainer}
+        className="absolute inset-0 map-container h-full w-full"
+      />
+      <MapDialog data={choosenCountry} close={closeDrawer} />
+    </section>
+  );
 }
