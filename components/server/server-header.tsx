@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { ServerWithMembersWithProfiles } from "@worldcord/types";
 import { MemberRole } from "@prisma/client";
 import { ChevronDown, PlusCircle, Settings, Trash } from "lucide-react";
@@ -31,8 +31,16 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
         asChild
         disabled={!isModerator}
       >
-        <button className="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
-          {server.name}
+        <button className="w-full text-md font-semibold px-3 flex items-center h-16 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
+          <div className="flex gap-1">
+            <Image
+              alt={server.name}
+              src={server.imageUrl}
+              width={20}
+              height={20}
+            />
+            {server.name}
+          </div>
           <ChevronDown className="h-5 w-5 ml-auto" />
         </button>
       </DropdownMenuTrigger>

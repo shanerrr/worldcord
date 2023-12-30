@@ -4,6 +4,7 @@ import { Bell, Globe2 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../theme-toggle";
 import { Button } from "../ui/button";
+import NavigationProfile from "./navigation-profile";
 
 export default function NavigationBottom() {
   return (
@@ -18,14 +19,7 @@ export default function NavigationBottom() {
         <Button variant="ghost" size="icon">
           <Bell size={20} />
         </Button>
-        <UserButton
-          afterSignOutUrl="/"
-          appearance={{
-            elements: {
-              avatarBox: "h-10 w-10",
-            },
-          }}
-        />
+        <NavigationProfile />
       </div>
     </aside>
   );

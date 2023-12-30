@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { initalServer } from "@worldcord/lib/inital-profile";
-import ServerSidebar from "@worldcord/components/server/server-sidebar";
-import { Profile } from "@prisma/client";
-import { ServerWithMembersWithProfiles } from "@worldcord/types";
+import ServerMain from "@worldcord/components/server/server-main";
 
 export default async function MainLayout({
   params,
@@ -17,12 +15,15 @@ export default async function MainLayout({
 
   return (
     <main className="h-full flex flex-col">
-      <div className="flex flex-grow">
+      <ServerMain server={server} profile={profile}>
+        {children}
+      </ServerMain>
+      {/* <div className="flex flex-grow">
         <div className="w-60 z-20 fixed h-full">
           <ServerSidebar server={server} profile={profile} />
         </div>
         <div>{children}</div>
-      </div>
+      </div> */}
     </main>
   );
 }
