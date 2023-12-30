@@ -1,29 +1,69 @@
+import Image from "next/image";
+
 import { ServerHeader } from "./server-header";
-import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 import { ServerSection } from "./server-section";
 import { ServerChannel } from "./server-channel";
+import { ServerSearch } from "./server-search";
+
+import { ScrollArea } from "@worldcord/components/ui/scroll-area";
+
+import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
 
 import { ServerWithMembersWithProfiles } from "@worldcord/types";
-import { Profile, ChannelType } from "@prisma/client";
+import { Profile, ChannelType, Channel, MemberRole } from "@prisma/client";
+import ActionTooltip from "../action-tooltip";
 
 type ServerSidebarProps = {
   server: ServerWithMembersWithProfiles;
   profile: Profile | null;
 };
-export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
-  const textChannels = server?.channels.filter(
-    (channel) => channel.type === ChannelType.TEXT
-  );
-  const audioChannels = server?.channels.filter(
-    (channel) => channel.type === ChannelType.AUDIO
-  );
-  const videoChannels = server?.channels.filter(
-    (channel) => channel.type === ChannelType.VIDEO
-  );
 
-  const members = profile
-    ? server?.members.filter((member) => member.profileId !== profile.id)
-    : null;
+const iconMap = {
+  [ChannelType.TEXT]: <Hash className="mr-2 h-4 w-4" />,
+  [ChannelType.AUDIO]: <Mic className="mr-2 h-4 w-4" />,
+  [ChannelType.VIDEO]: <Video className="mr-2 h-4 w-4" />,
+};
+
+const roleIconMap = (profile: Profile, role: MemberRole) => {
+  const iconMap = {
+    [MemberRole.GUEST]: null,
+    [MemberRole.MODERATOR]: (
+      <ShieldCheck size={16} className="text-purple-500" />
+    ),
+    [MemberRole.ADMIN]: <ShieldAlert size={16} className="text-rose-400" />,
+  };
+
+  return (
+    <div className="text-indigo-500 flex items-center gap-1 mr-2">
+      <ActionTooltip label={role} align="center" side="right">
+        <span className="">{iconMap[role]}</span>
+      </ActionTooltip>
+      <Image
+        className="rounded-full"
+        src={profile.imageUrl!}
+        alt={profile.username}
+        width={32}
+        height={32}
+      />
+    </div>
+  );
+};
+
+export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
+  const { TEXT, AUDIO, VIDEO } = server.channels.reduce<
+    Record<string, Channel[]>
+  >((acc, cur) => {
+    if (!acc[cur.type]) acc[cur.type] = [];
+
+    acc[cur.type].push(cur);
+    return acc;
+  }, {});
+
+  const members = server.members;
+
+  // const members = server?.members.filter(
+  //   (member) => member.profileId !== profile?.id
+  // );
 
   const role = profile
     ? server.members.find((member) => member.profileId === profile!.id)?.role
@@ -33,13 +73,13 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
     <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full">
       <ServerHeader server={server} role={role} />
       <ScrollArea className="flex-1 px-3 mt-2">
-        {/* <div className="mt-2">
+        <div className="my-2">
           <ServerSearch
             data={[
               {
                 label: "Text Channels",
                 type: "channel",
-                data: textChannels?.map((channel) => ({
+                data: TEXT?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
                   icon: iconMap[channel.type],
@@ -48,7 +88,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
               {
                 label: "Voice Channels",
                 type: "channel",
-                data: audioChannels?.map((channel) => ({
+                data: AUDIO?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
                   icon: iconMap[channel.type],
@@ -57,7 +97,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
               {
                 label: "Video Channels",
                 type: "channel",
-                data: videoChannels?.map((channel) => ({
+                data: VIDEO?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
                   icon: iconMap[channel.type],
@@ -68,14 +108,14 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
                 type: "member",
                 data: members?.map((member) => ({
                   id: member.id,
-                  name: member.profile.name,
-                  icon: roleIconMap[member.role],
+                  name: member.profile.username,
+                  icon: roleIconMap(member.profile, member.role),
                 })),
               },
             ]}
           />
-        </div> */}
-        {!!textChannels?.length && (
+        </div>
+        {!!TEXT?.length && (
           <div className="mb-2">
             <ServerSection
               sectionType="channels"
@@ -84,7 +124,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
               label="Text Channels"
             />
             <div className="space-y-[2px]">
-              {textChannels.map((channel) => (
+              {TEXT.map((channel) => (
                 <ServerChannel
                   key={channel.id}
                   channel={channel}
@@ -95,7 +135,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
             </div>
           </div>
         )}
-        {!!audioChannels?.length && (
+        {!!AUDIO?.length && (
           <div className="mb-2">
             <ServerSection
               sectionType="channels"
@@ -104,7 +144,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
               label="Voice Channels"
             />
             <div className="space-y-[2px]">
-              {audioChannels.map((channel) => (
+              {AUDIO.map((channel) => (
                 <ServerChannel
                   key={channel.id}
                   channel={channel}
@@ -115,7 +155,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
             </div>
           </div>
         )}
-        {!!videoChannels?.length && (
+        {!!VIDEO?.length && (
           <div className="mb-2">
             <ServerSection
               sectionType="channels"
@@ -124,7 +164,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
               label="Video Channels"
             />
             <div className="space-y-[2px]">
-              {videoChannels.map((channel) => (
+              {VIDEO.map((channel) => (
                 <ServerChannel
                   key={channel.id}
                   channel={channel}
