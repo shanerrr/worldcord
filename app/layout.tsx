@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@worldcord/components/providers/theme-provide";
+import { SocketProvider } from "@worldcord/components/providers/socket-provider";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,7 +26,7 @@ export default function RootLayout({
             defaultTheme="system"
             storageKey="worldcord-theme"
           >
-            {children}
+            <SocketProvider>{children}</SocketProvider>
           </ThemeProvider>
         </body>
       </html>
