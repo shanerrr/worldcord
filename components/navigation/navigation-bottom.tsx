@@ -8,7 +8,7 @@ import NavigationProfile from "./navigation-profile";
 
 export default function NavigationBottom() {
   return (
-    <aside className="absolute bottom-6 z-10 dark:bg-zinc-900 h-16 bg-zinc-200 left-1/2 -translate-x-1/2 px-6 rounded-2xl flex items-center ring-1 ring-muted">
+    <aside className="absolute bottom-6 z-10 dark:bg-zinc-900 h-16 bg-zinc-200 left-1/2 -translate-x-1/2 px-6 rounded-2xl flex items-center ring-1 ring-muted shadow-md">
       <div className="flex items-center divide-x-2 divide-white dark:divide-zinc-700 gap-2">
         <div className="pr-2">
           <Link href="/dashboard">

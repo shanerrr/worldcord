@@ -4,15 +4,12 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { Button } from "@worldcord/components/ui/button";
 import { Input } from "../ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@worldcord/components/ui/form";
 
@@ -23,13 +20,13 @@ type ChatInputProps = {
   query: Record<string, any>;
 };
 
-const inputSchema = z.object({
+const formSchema = z.object({
   content: z.string().min(1),
 });
 
-export default function ChatInput({}: ChatInputProps) {
-  const form = useForm<z.infer<typeof inputSchema>>({
-    resolver: zodResolver(inputSchema),
+export default function ChatInput({ apiUrl, query }: ChatInputProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
@@ -37,13 +34,21 @@ export default function ChatInput({}: ChatInputProps) {
 
   const isLoading = form.formState.isLoading;
 
-  // 2. Define a submit handler.
-  const onSubmit = (values: z.infer<typeof inputSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  };
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      fetch(
+        `${apiUrl}?channelId=${query.channelId}&serverId=${query.serverId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+        }
+      );
 
+      form.reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="px-3">
@@ -53,10 +58,10 @@ export default function ChatInput({}: ChatInputProps) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="relative p-4 pb-6">
+                <div className="relative pb-6">
                   <Input
                     disabled={isLoading}
-                    className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                    className="p-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                     placeholder="Type your funniest thoughts!"
                     {...field}
                   />

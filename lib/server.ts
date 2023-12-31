@@ -17,3 +17,12 @@ export const getChannel = async (serverId: string, channelId: string) => {
     },
   });
 };
+
+export const getMember = async (serverId: string, profileId: string) => {
+  return await db.member.findFirst({
+    where: {
+      serverId,
+      profileId,
+    },
+  });
+};
