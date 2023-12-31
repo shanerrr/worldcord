@@ -1,12 +1,12 @@
 "use client";
-
-import { Channel, ChannelType, MemberRole, Server } from "@prisma/client";
 import { Edit, Hash, Lock, Mic, Trash, Video } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import ActionTooltip from "@worldcord/components/action-tooltip";
 
 import { cn } from "@worldcord/lib/utils";
-import ActionTooltip from "@worldcord/components/action-tooltip";
+import { Channel, ChannelType, MemberRole, Server } from "@prisma/client";
+
 // import { ModalType, useModal } from "@/hooks/use-modal-store";
 
 interface ServerChannelProps {

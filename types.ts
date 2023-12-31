@@ -1,3 +1,6 @@
+import { Server as NetServer, Socket } from "net";
+import { Server as SocketIOServer } from "socket.io";
+import { NextApiResponse } from "next";
 import { Server, Member, Profile, Channel } from "@prisma/client";
 
 export type MapState = {
@@ -10,4 +13,11 @@ export type MapState = {
 export type ServerWithMembersWithProfiles = Server & {
   members: (Member & { profile: Profile })[];
   channels: Channel[];
+};
+export type NextApiResponseServerIo = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer;
+    };
+  };
 };

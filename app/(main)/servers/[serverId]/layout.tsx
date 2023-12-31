@@ -13,17 +13,19 @@ export default async function MainLayout({
 
   if (!server) return redirect("/");
 
+  // useEffect(() => {
+  //   redirect(
+  //     `/servers/${params?.serverId}/channels/${
+  //       server.channels.filter((ch) => ch.type === "TEXT")[0].id
+  //     }`
+  //   );
+  // }, []);
+
   return (
     <main className="h-full flex flex-col">
       <ServerMain server={server} profile={profile}>
         {children}
       </ServerMain>
-      {/* <div className="flex flex-grow">
-        <div className="w-60 z-20 fixed h-full">
-          <ServerSidebar server={server} profile={profile} />
-        </div>
-        <div>{children}</div>
-      </div> */}
     </main>
   );
 }
