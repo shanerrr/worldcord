@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Mapbox from "@worldcord/components/map/map";
 import { SignOutButton } from "@clerk/nextjs";
 
-import { initalProfile } from "@worldcord/lib/inital-profile";
+import Mapbox from "@worldcord/components/map/map";
+
+import { createOrGetUser } from "@worldcord/lib/user";
 
 export default async function Inital() {
-  const profile = await initalProfile();
+  const { user } = await createOrGetUser();
 
   return (
     <main className="w-full h-full">
@@ -15,14 +16,14 @@ export default async function Inital() {
           <div className="relative w-14 h-14 rounded-lg overflow-hidden">
             <Image
               className="absolute inset-0"
-              src={profile?.imageUrl!}
-              alt={profile?.username!}
+              src={user.imageUrl}
+              alt={user.username}
               fill={true}
             />
           </div>
           <div>
-            <span className="font-bold text-4xl">{profile?.username}</span>
-            <p>{profile?.email}</p>
+            <span className="font-bold text-4xl">{user.username}</span>
+            <p>{user.email}</p>
           </div>
         </div>
         <div>

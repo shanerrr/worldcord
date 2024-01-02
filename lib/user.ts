@@ -1,29 +1,27 @@
 import { currentUser } from "@clerk/nextjs";
+
 import { db } from "./db";
 
-export const initalProfile = async () => {
+export const createOrGetUser = async () => {
   const user = await currentUser();
 
   if (!user) return;
 
-  const profile = await db.profile.findUnique({
-    where: {
-      userId: user.id,
+  const res = await fetch("http://localhost:4000/api/user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  });
-
-  if (profile) return profile;
-
-  const newProfile = await db.profile.create({
-    data: {
-      userId: user.id,
+    body: JSON.stringify({
+      id: user.id,
       username: user.username!,
-      imageUrl: user.imageUrl,
       email: user.emailAddresses[0].emailAddress,
-    },
+    }),
   });
 
-  return newProfile;
+  if (!res.ok) throw new Error("Error creating or updating user!");
+
+  return res.json();
 };
 
 export const initalServer = async (serverId: string) => {

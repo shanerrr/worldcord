@@ -1,49 +1,68 @@
 "use client";
 
-import { createContext, useState, useEffect, useContext } from "react";
-import { io as ClientIO } from "socket.io-client";
-import type { Socket } from "socket.io-client";
+import { createContext, useEffect, useContext, useRef } from "react";
 
-type SocketContextType = {
-  socket: Socket | null;
-  isConnected: boolean;
+type WebSocketContextType = {
+  subscribe: (channel: string, callback: () => void) => void;
+  unsubscribe: () => void;
 };
 
-const SocketContext = createContext<SocketContextType>({
-  socket: null,
-  isConnected: false,
+const SocketContext = createContext<WebSocketContextType>({
+  subscribe: () => null,
+  unsubscribe: () => null,
 });
 
 export const useSocket = () => useContext(SocketContext);
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+export default function SocketProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const ws = useRef<WebSocket>();
+  const channels = useRef<Record<string, () => void>>({}); // maps each channel to the callback
+
+  /* called from a component that registers a callback for a channel */
+  const subscribe = (channel: string, callback: () => void) => {
+    channels.current[channel] = callback;
+  };
+
+  /* remove callback  */
+  const unsubscribe = (channel: string) => {
+    delete channels.current[channel];
+  };
 
   useEffect(() => {
-    const socketInstance = ClientIO(process.env.NEXT_PUBLIC_SITE_URL!, {
-      path: "/api/socket/io",
-      addTrailingSlash: false,
-    });
+    /* WS initialization and cleanup */
+    ws.current = new WebSocket("ws://localhost:4000");
+    ws.current.onopen = () => {
+      console.log("WS open");
+    };
+    ws.current.onclose = () => {
+      console.log("WS close");
+    };
+    ws.current.onmessage = (message) => {
+      const { type, ...data } = JSON.parse(message.data);
+      const chatChannel = `${type}_${data.chat}`;
 
-    socketInstance.on("connect", () => {
-      setIsConnected(true);
-    });
-
-    socketInstance.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
-    setSocket(socketInstance);
-
+      // lookup for an existing chat in which this message belongs
+      // if no chat is subscribed send message to generic channel
+      if (channels.current[chatChannel]) {
+        /* in chat component the subscribed channel is `MESSAGE_CREATE_${id}` */
+        channels.current[chatChannel](data);
+      } else {
+        /* in notifications wrapper the subscribed channel is `MESSAGE_CREATE` */
+        channels.current[type]?.(data);
+      }
+    };
     return () => {
-      socketInstance.disconnect();
+      ws.current?.close();
     };
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={[subscribe, unsubscribe]}>
       {children}
     </SocketContext.Provider>
   );
-};
+}

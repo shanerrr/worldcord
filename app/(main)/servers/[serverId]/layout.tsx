@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { initalServer } from "@worldcord/lib/inital-profile";
+import { initalServer } from "@worldcord/lib/user";
 import ServerMain from "@worldcord/components/server/server-main";
 
 export default async function MainLayout({

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { ThemeProvider } from "@worldcord/components/providers/theme-provide";
-import { SocketProvider } from "@worldcord/components/providers/socket-provider";
+import ThemeProvider from "@worldcord/components/providers/theme-provide";
+import SocketProvider from "@worldcord/components/providers/socket-provider";
+import QueryProvider from "@worldcord/components/providers/query-provider";
 
 import "./globals.css";
 
@@ -26,7 +27,9 @@ export default function RootLayout({
             defaultTheme="system"
             storageKey="worldcord-theme"
           >
-            <SocketProvider>{children}</SocketProvider>
+            <SocketProvider>
+              <QueryProvider>{children}</QueryProvider>
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>
