@@ -12,6 +12,7 @@ import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
 import { ServerWithMembersWithProfiles } from "@worldcord/types";
 import { Profile, ChannelType, Channel, MemberRole } from "@prisma/client";
 import ActionTooltip from "../action-tooltip";
+import NavigationBottom from "../navigation/navigation-bottom";
 
 type ServerSidebarProps = {
   server: ServerWithMembersWithProfiles;
@@ -70,7 +71,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
     : null;
 
   return (
-    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full">
+    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full relative">
       <ServerHeader server={server} role={role} />
       <ScrollArea className="flex-1 px-3 mt-2">
         <div className="my-2">
@@ -191,6 +192,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
           </div>
         )} */}
       </ScrollArea>
+      <NavigationBottom />
     </div>
   );
 }
