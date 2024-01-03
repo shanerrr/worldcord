@@ -3,10 +3,10 @@ import { SignOutButton } from "@clerk/nextjs";
 
 import Mapbox from "@worldcord/components/map/map";
 
-import { createOrGetUser } from "@worldcord/lib/user";
+import { UserAPI } from "@worldcord/apis/user";
 
 export default async function Inital() {
-  const { user } = await createOrGetUser();
+  const { user } = await UserAPI.findOrCreate();
 
   return (
     <main className="w-full h-full">

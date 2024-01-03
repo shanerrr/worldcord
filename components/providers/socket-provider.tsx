@@ -34,7 +34,7 @@ export default function SocketProvider({
 
   useEffect(() => {
     /* WS initialization and cleanup */
-    ws.current = new WebSocket("ws://localhost:4000");
+    ws.current = new WebSocket("ws://192.168.210.34:4000");
     ws.current.onopen = () => {
       console.log("WS open");
     };

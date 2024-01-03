@@ -1,4 +1,4 @@
-import { getGeneralChannel } from "@worldcord/lib/server";
+import { ChannelAPI } from "@worldcord/apis";
 import { redirect } from "next/navigation";
 
 type ServerPagePros = {
@@ -8,11 +8,10 @@ type ServerPagePros = {
 };
 
 export default async function ServerPage({ params }: ServerPagePros) {
-  const channel = await getGeneralChannel(params.serverId);
+  const { channel } = await ChannelAPI.getFirst(params.serverId);
 
-  if (channel) {
+  if (channel)
     return redirect(`/servers/${params?.serverId}/channels/${channel.id}`);
-  }
 
-  return <div></div>;
+  return <div>Start by adding a new channel!</div>;
 }

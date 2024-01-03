@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { initalServer } from "@worldcord/lib/user";
+import { UserAPI, MemberAPI, ServerAPI, initalServer } from "@worldcord/apis";
 import ServerMain from "@worldcord/components/server/server-main";
 
 export default async function MainLayout({
@@ -9,21 +9,18 @@ export default async function MainLayout({
   params: { serverId: string };
   children: React.ReactNode;
 }) {
-  const { profile, server } = await initalServer(params.serverId);
+  const { user } = await UserAPI.findOrCreate();
+
+  const [_, { server }] = await Promise.all([
+    MemberAPI.findOrCreate(params.serverId, user.id),
+    ServerAPI.get(params.serverId),
+  ]);
 
   if (!server) return redirect("/");
 
-  // useEffect(() => {
-  //   redirect(
-  //     `/servers/${params?.serverId}/channels/${
-  //       server.channels.filter((ch) => ch.type === "TEXT")[0].id
-  //     }`
-  //   );
-  // }, []);
-
   return (
     <main className="h-full flex flex-col">
-      <ServerMain server={server} profile={profile}>
+      <ServerMain server={server} user={user}>
         {children}
       </ServerMain>
     </main>

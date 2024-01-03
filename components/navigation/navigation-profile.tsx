@@ -13,9 +13,10 @@ import Image from "next/image";
 import { Skeleton } from "@worldcord/components/ui/skeleton";
 
 import { Button } from "../ui/button";
+import { Profile } from "@prisma/client";
 
-export default function NavigationProfile() {
-  const { signOut, user } = useClerk();
+export default function NavigationProfile({ user }: { user: Profile }) {
+  const { signOut } = useClerk();
   const router = useRouter();
   return (
     <DropdownMenu>

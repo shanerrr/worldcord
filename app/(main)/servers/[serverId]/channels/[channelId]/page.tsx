@@ -4,8 +4,7 @@ import ChatHeader from "@worldcord/components/chat/chat-header";
 import ChatInput from "@worldcord/components/chat/chat-input";
 import ChatMessages from "@worldcord/components/chat/chat-messages";
 
-import { getChannel, getMember } from "@worldcord/lib/server";
-import { currentProfile } from "@worldcord/lib/current-profile";
+import { ChannelAPI, MemberAPI, UserAPI } from "@worldcord/apis";
 
 type ChannelPagePros = {
   params: {
@@ -15,11 +14,12 @@ type ChannelPagePros = {
 };
 
 export default async function ChannelPage({ params }: ChannelPagePros) {
-  const profile = await currentProfile();
-  const member = await getMember(params.serverId, profile?.id!);
-  const channel = await getChannel(params.serverId, params.channelId);
+  const user = await UserAPI.findOrCreate();
 
-  if (!profile || !member || !channel) return redirectToSignIn();
+  const [{ channel }, { member }] = await Promise.all([
+    ChannelAPI.get(params.serverId, params.channelId),
+    MemberAPI.get(params.serverId, user.id),
+  ]);
 
   return (
     <div className="flex flex-col h-full">

@@ -13,10 +13,11 @@ import { ServerWithMembersWithProfiles } from "@worldcord/types";
 import { Profile, ChannelType, Channel, MemberRole } from "@prisma/client";
 import ActionTooltip from "../action-tooltip";
 import NavigationBottom from "../navigation/navigation-bottom";
+import { MemberAPI } from "@worldcord/apis";
 
 type ServerSidebarProps = {
   server: ServerWithMembersWithProfiles;
-  profile: Profile | null;
+  user: Profile;
 };
 
 const iconMap = {
@@ -50,7 +51,12 @@ const roleIconMap = (profile: Profile, role: MemberRole) => {
   );
 };
 
-export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
+export default async function ServerSidebar({
+  server,
+  user,
+}: ServerSidebarProps) {
+  const { members } = await MemberAPI.getAll(server.id);
+
   const { TEXT, AUDIO, VIDEO } = server.channels.reduce<
     Record<string, Channel[]>
   >((acc, cur) => {
@@ -60,18 +66,12 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
     return acc;
   }, {});
 
-  const members = server.members;
-
-  // const members = server?.members.filter(
-  //   (member) => member.profileId !== profile?.id
-  // );
-
-  const role = profile
-    ? server.members.find((member) => member.profileId === profile!.id)?.role
+  const role = user
+    ? members.find((member) => member.profileId === user!.id)?.role
     : null;
 
   return (
-    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full relative">
+    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full relative w-96">
       <ServerHeader server={server} role={role} />
       <ScrollArea className="flex-1 px-3 mt-2">
         <div className="my-2">
@@ -109,8 +109,8 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
                 type: "member",
                 data: members?.map((member) => ({
                   id: member.id,
-                  name: member.profile.username,
-                  icon: roleIconMap(member.profile, member.role),
+                  name: member.user.username,
+                  icon: roleIconMap(member.user, member.role),
                 })),
               },
             ]}
@@ -192,7 +192,7 @@ export default function ServerSidebar({ server, profile }: ServerSidebarProps) {
           </div>
         )} */}
       </ScrollArea>
-      <NavigationBottom />
+      <NavigationBottom user={user} />
     </div>
   );
 }

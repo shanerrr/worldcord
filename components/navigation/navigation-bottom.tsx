@@ -5,8 +5,9 @@ import Link from "next/link";
 import ThemeToggle from "../theme-toggle";
 import { Button } from "../ui/button";
 import NavigationProfile from "./navigation-profile";
+import { Profile } from "@prisma/client";
 
-export default function NavigationBottom() {
+export default function NavigationBottom({ user }: { user: Profile }) {
   return (
     <aside className="absolute bottom-6 z-10 dark:bg-zinc-900 h-16 bg-zinc-200 left-1/2 -translate-x-1/2 px-6 rounded-2xl flex items-center ring-1 ring-muted shadow-md">
       <div className="flex items-center divide-x-2 divide-white dark:divide-zinc-700 gap-2">
@@ -20,7 +21,7 @@ export default function NavigationBottom() {
           <Button variant="ghost" size="icon">
             <Bell size={20} />
           </Button>
-          <NavigationProfile />
+          <NavigationProfile user={user} />
         </div>
       </div>
     </aside>

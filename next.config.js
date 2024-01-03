@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "flagsapi.com",
+        hostname: "flagcdn.com",
       },
       {
         protocol: "https",

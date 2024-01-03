@@ -33,12 +33,14 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
       >
         <button className="w-full text-md font-semibold px-4 flex items-center h-16 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
           <div className="flex gap-1">
-            <Image
-              alt={server.name}
-              src={server.imageUrl}
-              width={20}
-              height={20}
-            />
+            <div className="relative w-10">
+              <Image
+                className="absolute inset-0 object-contain"
+                alt={server.name}
+                src={server.imageUrl}
+                fill={true}
+              />
+            </div>
             {server.name}
           </div>
           <ChevronDown className="h-5 w-5 ml-auto" />
