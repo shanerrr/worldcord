@@ -1,5 +1,3 @@
-import { redirectToSignIn } from "@clerk/nextjs";
-
 import ChatHeader from "@worldcord/components/chat/chat-header";
 import ChatInput from "@worldcord/components/chat/chat-input";
 import ChatMessages from "@worldcord/components/chat/chat-messages";
@@ -14,7 +12,7 @@ type ChannelPagePros = {
 };
 
 export default async function ChannelPage({ params }: ChannelPagePros) {
-  const user = await UserAPI.findOrCreate();
+  const { user } = await UserAPI.findOrCreate();
 
   const [{ channel }, { member }] = await Promise.all([
     ChannelAPI.get(params.serverId, params.channelId),
@@ -39,7 +37,8 @@ export default async function ChannelPage({ params }: ChannelPagePros) {
         paramValue={channel.id}
       />
       <ChatInput
-        name={channel?.name!}
+        name={channel.name}
+        member={member}
         type="channel"
         apiUrl="/api/socket/messages"
         query={{

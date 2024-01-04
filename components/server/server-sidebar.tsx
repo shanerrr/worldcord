@@ -10,7 +10,13 @@ import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
 
 import { ServerWithMembersWithProfiles } from "@worldcord/types";
-import { Profile, ChannelType, Channel, MemberRole } from "@prisma/client";
+import {
+  Profile,
+  ChannelType,
+  Channel,
+  MemberRole,
+  Member,
+} from "@prisma/client";
 import ActionTooltip from "../action-tooltip";
 import NavigationBottom from "../navigation/navigation-bottom";
 import { MemberAPI } from "@worldcord/apis";
@@ -67,11 +73,11 @@ export default async function ServerSidebar({
   }, {});
 
   const role = user
-    ? members.find((member) => member.profileId === user!.id)?.role
+    ? members.find((member: Member) => member.userId === user!.id)?.role
     : null;
 
   return (
-    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full relative w-96">
+    <div className="bg-zinc-200 border-r dark:border-zinc-700 border-zinc-400 dark:bg-zinc-900 h-full relative">
       <ServerHeader server={server} role={role} />
       <ScrollArea className="flex-1 px-3 mt-2">
         <div className="my-2">
@@ -107,7 +113,7 @@ export default async function ServerSidebar({
               {
                 label: "Members",
                 type: "member",
-                data: members?.map((member) => ({
+                data: members?.map((member: Member) => ({
                   id: member.id,
                   name: member.user.username,
                   icon: roleIconMap(member.user, member.role),

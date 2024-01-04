@@ -1,7 +1,7 @@
 export const MemberAPI = {
   get: async (serverId: string, memberId: string) => {
     const res = await fetch(
-      `http://localhost:4000/api/server/${serverId}/members/${memberId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/members/${memberId}`,
       {
         method: "GET",
       }
@@ -12,9 +12,12 @@ export const MemberAPI = {
     return res.json();
   },
   getAll: async (id: string) => {
-    const res = await fetch(`http://localhost:4000/api/server/${id}/members`, {
-      method: "GET",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/server/${id}/members`,
+      {
+        method: "GET",
+      }
+    );
 
     if (!res.ok) throw new Error("Error getting members!");
 
@@ -22,7 +25,7 @@ export const MemberAPI = {
   },
   findOrCreate: async (serverId: string, userId: string) => {
     const res = await fetch(
-      `http://localhost:4000/api/server/${serverId}/members`,
+      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/members`,
       {
         method: "PUT",
         headers: {
@@ -30,7 +33,6 @@ export const MemberAPI = {
         },
         body: JSON.stringify({
           id: userId,
-          serverId,
         }),
       }
     );

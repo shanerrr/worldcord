@@ -35,7 +35,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
           <div className="flex gap-1">
             <div className="relative w-10">
               <Image
-                className="absolute inset-0 object-contain"
+                className="absolute inset-0 object-cover"
                 alt={server.name}
                 src={server.imageUrl}
                 fill={true}

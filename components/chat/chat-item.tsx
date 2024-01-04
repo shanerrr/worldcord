@@ -21,6 +21,7 @@ import {
 } from "@worldcord/components/ui/form";
 import { Input } from "@worldcord/components/ui/input";
 import { Button } from "@worldcord/components/ui/button";
+import { UserAvatar } from "../user-avatar";
 // import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
@@ -127,13 +128,13 @@ export const ChatItem = ({
   const isImage = !isPDF && fileUrl;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
+    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full border-y">
       <div className="group flex gap-x-2 items-start w-full">
         <div
           onClick={onMemberClick}
           className="cursor-pointer hover:drop-shadow-md transition"
         >
-          {/* <UserAvatar src={member.profile.imageUrl} /> */}
+          <UserAvatar src={member.user.imageUrl} />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
@@ -142,7 +143,7 @@ export const ChatItem = ({
                 onClick={onMemberClick}
                 className="font-semibold text-sm hover:underline cursor-pointer"
               >
-                {member.profile.username}
+                {member.user.username}
               </p>
               <ActionTooltip label={member.role}>
                 {roleIconMap[member.role]}

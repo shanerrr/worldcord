@@ -50,6 +50,7 @@ export default function ChatMessages({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({
       apiUrl,
+      serverId: socketQuery.serverId,
       queryKey: `chat${chatId}`,
       paramKey,
       paramValue,
@@ -83,9 +84,9 @@ export default function ChatMessages({
       <ChatWelcome type={type} name={name} />
 
       <div className="flex flex-col-reverse mt-auto">
-        {data?.pages?.map((group, i) => (
+        {data?.pages.map((group, i) => (
           <Fragment key={i}>
-            {group.items.map((message: MessageWithMemberWithProfile) => (
+            {group.messages.map((message: MessageWithMemberWithProfile) => (
               <ChatItem
                 key={message.id}
                 id={message.id}
