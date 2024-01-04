@@ -1,15 +1,16 @@
 "use client";
 
-import { createContext, useEffect, useContext, useRef } from "react";
+import { createContext, useEffect, useContext, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type WebSocketContextType = {
-  subscribe: (channel: string, callback: () => void) => void;
-  unsubscribe: () => void;
+  socket: WebSocket | undefined;
+  isConnected: boolean;
 };
 
 const SocketContext = createContext<WebSocketContextType>({
-  subscribe: () => null,
-  unsubscribe: () => null,
+  socket: undefined,
+  isConnected: false,
 });
 
 export const useSocket = () => useContext(SocketContext);
@@ -20,39 +21,37 @@ export default function SocketProvider({
   children: React.ReactNode;
 }) {
   const ws = useRef<WebSocket>();
-  const channels = useRef<Record<string, () => void>>({}); // maps each channel to the callback
-
-  /* called from a component that registers a callback for a channel */
-  const subscribe = (channel: string, callback: () => void) => {
-    channels.current[channel] = callback;
-  };
-
-  /* remove callback  */
-  const unsubscribe = (channel: string) => {
-    delete channels.current[channel];
-  };
+  const [connected, setConnected] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     /* WS initialization and cleanup */
-    ws.current = new WebSocket("ws://192.168.210.34:4000");
-    ws.current.onopen = () => {
-      console.log("WS open");
-    };
-    ws.current.onclose = () => {
-      console.log("WS close");
-    };
-    ws.current.onmessage = (message) => {
-      const { type, ...data } = JSON.parse(message.data);
-      const chatChannel = `${type}_${data.chat}`;
-
-      // lookup for an existing chat in which this message belongs
-      // if no chat is subscribed send message to generic channel
-      if (channels.current[chatChannel]) {
-        /* in chat component the subscribed channel is `MESSAGE_CREATE_${id}` */
-        channels.current[chatChannel](data);
-      } else {
-        /* in notifications wrapper the subscribed channel is `MESSAGE_CREATE` */
-        channels.current[type]?.(data);
+    ws.current = new WebSocket("ws://172.25.189.214:4000");
+    ws.current.onopen = () => setConnected(true);
+    ws.current.onclose = () => setConnected(false);
+    ws.current.onmessage = (m) => {
+      const { type, queryKey, message } = JSON.parse(m.data);
+      if (type === "newMessage") {
+        queryClient.setQueryData([queryKey], (oldData: any) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return {
+              pages: [
+                {
+                  messages: [message],
+                },
+              ],
+            };
+          }
+          const newData = [...oldData.pages];
+          newData[0] = {
+            ...newData[0],
+            messages: [message, ...newData[0].messages],
+          };
+          return {
+            ...oldData,
+            pages: newData,
+          };
+        });
       }
     };
     return () => {
@@ -61,7 +60,9 @@ export default function SocketProvider({
   }, []);
 
   return (
-    <SocketContext.Provider value={[subscribe, unsubscribe]}>
+    <SocketContext.Provider
+      value={{ socket: ws.current, isConnected: connected }}
+    >
       {children}
     </SocketContext.Provider>
   );

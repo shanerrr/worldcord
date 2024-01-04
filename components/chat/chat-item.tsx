@@ -35,8 +35,6 @@ interface ChatItemProps {
   deleted: boolean;
   currentMember: Member;
   isUpdated: boolean;
-  socketUrl: string;
-  socketQuery: Record<string, string>;
 }
 
 const roleIconMap = {
@@ -58,8 +56,6 @@ export const ChatItem = ({
   deleted,
   currentMember,
   isUpdated,
-  socketUrl,
-  socketQuery,
 }: ChatItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   //   const { onOpen } = useModal();

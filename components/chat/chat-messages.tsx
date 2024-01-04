@@ -8,6 +8,7 @@ import ChatWelcome from "./chat-welcome";
 import { ChatItem } from "./chat-item";
 
 import { useChatQuery } from "@worldcord/hooks/use-chat-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 // import { useChatQuery } from "@/hooks/use-chat-query";
 // import { useChatSocket } from "@/hooks/use-chat-socket";
@@ -26,34 +27,34 @@ type MessageWithMemberWithProfile = Message & {
 
 interface ChatMessagesProps {
   name: string;
-  member: Member;
-  chatId: string;
-  apiUrl: string;
-  socketUrl: string;
-  socketQuery: Record<string, string>;
-  paramKey: "channelId" | "conversationId";
-  paramValue: string;
   type: "channel" | "conversation";
+  details: {
+    serverId: string;
+    channelId: string;
+  };
+  member: Member;
 }
 
 export default function ChatMessages({
   name,
-  member,
-  chatId,
-  apiUrl,
-  socketUrl,
-  socketQuery,
-  paramKey,
-  paramValue,
   type,
+  details,
+  member,
 }: ChatMessagesProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useChatQuery({
-      apiUrl,
-      serverId: socketQuery.serverId,
-      queryKey: `chat${chatId}`,
-      paramKey,
-      paramValue,
+  const fetchMessages = async ({ pageParam = undefined }) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/server/${details.serverId}/channels/${details.channelId}/messages?cursor=${pageParam}&batch=15`
+    );
+    return res.json();
+  };
+
+  const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [`channel:${details.channelId}`],
+      queryFn: fetchMessages,
+      initialPageParam: undefined,
+      getNextPageParam: (lastPage) => lastPage?.cursor,
+      // refetchInterval: isConnected ? false : 1000,
     });
 
   if (status === "pending") {
@@ -99,8 +100,6 @@ export default function ChatMessages({
                 deleted={false}
                 timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
                 isUpdated={message.updatedAt !== message.createdAt}
-                socketUrl={socketUrl}
-                socketQuery={socketQuery}
               />
             ))}
           </Fragment>

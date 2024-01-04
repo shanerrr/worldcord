@@ -23,28 +23,21 @@ export default async function ChannelPage({ params }: ChannelPagePros) {
     <div className="flex flex-col h-full">
       <ChatHeader name={channel.name} type={channel.type} />
       <ChatMessages
-        member={member}
         name={channel.name}
-        chatId={channel.id}
         type="channel"
-        apiUrl="/api/messages"
-        socketUrl="/api/socket/messages"
-        socketQuery={{
+        details={{
           channelId: channel.id,
           serverId: channel.serverId,
         }}
-        paramKey="channelId"
-        paramValue={channel.id}
+        member={member}
       />
       <ChatInput
-        name={channel.name}
-        member={member}
         type="channel"
-        apiUrl="/api/socket/messages"
-        query={{
-          channelId: channel?.id,
-          serverId: channel?.serverId,
+        details={{
+          channelId: channel.id,
+          serverId: channel.serverId,
         }}
+        member={member.id}
       />
     </div>
   );
