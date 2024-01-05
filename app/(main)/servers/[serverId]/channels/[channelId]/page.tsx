@@ -32,6 +32,7 @@ export default async function ChannelPage({ params }: ChannelPagePros) {
         member={member}
       />
       <ChatInput
+        name={channel.name}
         type="channel"
         details={{
           channelId: channel.id,

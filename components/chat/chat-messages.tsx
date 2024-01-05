@@ -1,21 +1,15 @@
 "use client";
 
-import { Fragment, useRef, ElementRef } from "react";
-import { format } from "date-fns";
+import { Fragment, useRef } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { Member, Message, Profile } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
+
 import ChatWelcome from "./chat-welcome";
-import { ChatItem } from "./chat-item";
+import ChatItem from "./chat-item";
 
-import { useChatQuery } from "@worldcord/hooks/use-chat-query";
-import { useInfiniteQuery } from "@tanstack/react-query";
-
-// import { useChatQuery } from "@/hooks/use-chat-query";
-// import { useChatSocket } from "@/hooks/use-chat-socket";
-// import { useChatScroll } from "@/hooks/use-chat-scroll";
-
-// import { ChatWelcome } from "./chat-welcome";
-// import { ChatItem } from "./chat-item";
+import useChatQuery from "@worldcord/hooks/use-chat-query";
+import useChatScroll from "@worldcord/hooks/use-chat-scroll";
 
 const DATE_FORMAT = "d MMM yyyy, HH:mm";
 
@@ -41,21 +35,16 @@ export default function ChatMessages({
   details,
   member,
 }: ChatMessagesProps) {
-  const fetchMessages = async ({ pageParam = undefined }) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${details.serverId}/channels/${details.channelId}/messages?cursor=${pageParam}&batch=15`
-    );
-    return res.json();
-  };
+  const messagesDivRef = useRef<HTMLDivElement | null>(null);
 
   const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: [`channel:${details.channelId}`],
-      queryFn: fetchMessages,
-      initialPageParam: undefined,
-      getNextPageParam: (lastPage) => lastPage?.cursor,
-      // refetchInterval: isConnected ? false : 1000,
-    });
+    useChatQuery({ details });
+
+  useChatScroll({
+    messagesDivRef,
+    hasMoreMessages: !isFetchingNextPage || hasNextPage,
+    fetchMoreMessages: fetchNextPage,
+  });
 
   if (status === "pending") {
     return (
@@ -80,9 +69,8 @@ export default function ChatMessages({
   }
 
   return (
-    <div className="flex-1 flex flex-col py-4 overflow-y-auto">
-      <div className="flex-1" />
-      <ChatWelcome type={type} name={name} />
+    <div ref={messagesDivRef} className="flex-1 flex flex-col overflow-y-auto">
+      {!hasNextPage && <ChatWelcome type={type} name={name} />}
 
       <div className="flex flex-col-reverse mt-auto">
         {data?.pages.map((group, i) => (
@@ -98,7 +86,7 @@ export default function ChatMessages({
                 // deleted={message.deleted}
                 fileUrl={null}
                 deleted={false}
-                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                timestamp={formatDistanceToNow(new Date(message.createdAt))}
                 isUpdated={message.updatedAt !== message.createdAt}
               />
             ))}

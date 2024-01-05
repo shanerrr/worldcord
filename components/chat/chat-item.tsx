@@ -47,7 +47,7 @@ const formSchema = z.object({
   content: z.string().min(1),
 });
 
-export const ChatItem = ({
+export default function ChatItem({
   id,
   content,
   member,
@@ -56,7 +56,7 @@ export const ChatItem = ({
   deleted,
   currentMember,
   isUpdated,
-}: ChatItemProps) => {
+}: ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   //   const { onOpen } = useModal();
   const params = useParams();
@@ -124,7 +124,7 @@ export const ChatItem = ({
   const isImage = !isPDF && fileUrl;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full border-y">
+    <div className="relative group flex items-center hover:bg-muted/60 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
         <div
           onClick={onMemberClick}
@@ -253,4 +253,4 @@ export const ChatItem = ({
       )}
     </div>
   );
-};
+}
