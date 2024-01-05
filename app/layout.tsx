@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ThemeProvider from "@worldcord/components/providers/theme-provide";
 import SocketProvider from "@worldcord/components/providers/socket-provider";
 import QueryProvider from "@worldcord/components/providers/query-provider";
+import ModalProvider from "@worldcord/components/providers/modal-provider";
 
 import "./globals.css";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
             defaultTheme="system"
             storageKey="worldcord-theme"
           >
+            <ModalProvider />
             <QueryProvider>
               <SocketProvider>{children}</SocketProvider>
             </QueryProvider>

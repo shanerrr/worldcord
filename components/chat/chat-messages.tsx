@@ -79,13 +79,13 @@ export default function ChatMessages({
               <ChatItem
                 key={message.id}
                 id={message.id}
+                details={details}
                 currentMember={member}
                 member={message.member}
                 content={message.content}
                 // fileUrl={message.fileUrl}
                 // deleted={message.deleted}
                 fileUrl={null}
-                deleted={false}
                 timestamp={formatDistanceToNow(new Date(message.createdAt))}
                 isUpdated={message.updatedAt !== message.createdAt}
               />

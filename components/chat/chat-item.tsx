@@ -1,18 +1,13 @@
 "use client";
 
-import * as z from "zod";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Member, MemberRole, Profile } from "@prisma/client";
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
 
-// import { UserAvatar } from "@/components/user-avatar";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
 import ActionTooltip from "@worldcord/components/action-tooltip";
-import { cn } from "@worldcord/lib/utils";
 import {
   Form,
   FormControl,
@@ -22,7 +17,12 @@ import {
 import { Input } from "@worldcord/components/ui/input";
 import { Button } from "@worldcord/components/ui/button";
 import { UserAvatar } from "../user-avatar";
-// import { useModal } from "@/hooks/use-modal-store";
+import { useModal } from "@worldcord/hooks/use-modal";
+import { MessageApi } from "@worldcord/apis";
+
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
+
+import { Member, MemberRole, Profile } from "@prisma/client";
 
 interface ChatItemProps {
   id: string;
@@ -32,9 +32,12 @@ interface ChatItemProps {
   };
   timestamp: string;
   fileUrl: string | null;
-  deleted: boolean;
   currentMember: Member;
   isUpdated: boolean;
+  details: {
+    serverId: string;
+    channelId: string;
+  };
 }
 
 const roleIconMap = {
@@ -53,21 +56,29 @@ export default function ChatItem({
   member,
   timestamp,
   fileUrl,
-  deleted,
+  details,
   currentMember,
   isUpdated,
 }: ChatItemProps) {
   const [isEditing, setIsEditing] = useState(false);
-  //   const { onOpen } = useModal();
-  const params = useParams();
-  const router = useRouter();
+  const { onOpen } = useModal();
 
-  const onMemberClick = () => {
-    if (member.id === currentMember.id) {
-      return;
-    }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: content,
+    },
+  });
 
-    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  const isLoading = form.formState.isSubmitting;
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await MessageApi.update(details.serverId, details.channelId, id, {
+      ...values,
+      // memberId: member,
+    });
+    form.reset();
+    setIsEditing(false);
   };
 
   useEffect(() => {
@@ -82,44 +93,13 @@ export default function ChatItem({
     return () => window.removeEventListener("keyDown", handleKeyDown);
   }, []);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      content: content,
-    },
-  });
-
-  const isLoading = form.formState.isSubmitting;
-
-  //   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  //     try {
-  //       const url = qs.stringifyUrl({
-  //         url: `${socketUrl}/${id}`,
-  //         query: socketQuery,
-  //       });
-
-  //       await axios.patch(url, values);
-
-  //       form.reset();
-  //       setIsEditing(false);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  useEffect(() => {
-    form.reset({
-      content: content,
-    });
-  }, [content]);
-
   const fileType = fileUrl?.split(".").pop();
 
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
   const isOwner = currentMember.id === member.id;
-  const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
-  const canEditMessage = !deleted && isOwner && !fileUrl;
+  const canDeleteMessage = isAdmin || isModerator || isOwner;
+  const canEditMessage = isOwner && !fileUrl;
   const isPDF = fileType === "pdf" && fileUrl;
   const isImage = !isPDF && fileUrl;
 
@@ -127,7 +107,7 @@ export default function ChatItem({
     <div className="relative group flex items-center hover:bg-muted/60 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
         <div
-          onClick={onMemberClick}
+          // onClick={onMemberClick}
           className="cursor-pointer hover:drop-shadow-md transition"
         >
           <UserAvatar src={member.user.imageUrl} />
@@ -136,7 +116,7 @@ export default function ChatItem({
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
               <p
-                onClick={onMemberClick}
+                // onClick={onMemberClick}
                 className="font-semibold text-sm hover:underline cursor-pointer"
               >
                 {member.user.username}
@@ -178,15 +158,9 @@ export default function ChatItem({
             </div>
           )}
           {!fileUrl && !isEditing && (
-            <p
-              className={cn(
-                "text-sm text-zinc-600 dark:text-zinc-300",
-                deleted &&
-                  "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
-              )}
-            >
+            <p className="text-sm text-zinc-600 dark:text-zinc-300">
               {content}
-              {isUpdated && !deleted && (
+              {isUpdated && (
                 <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
                   (edited)
                 </span>
@@ -197,9 +171,10 @@ export default function ChatItem({
             <Form {...form}>
               <form
                 className="flex items-center w-full gap-x-2 pt-2"
-                // onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormField
+                  disabled={isLoading}
                   control={form.control}
                   name="content"
                   render={({ field }) => (
@@ -207,7 +182,6 @@ export default function ChatItem({
                       <FormControl>
                         <div className="relative w-full">
                           <Input
-                            disabled={isLoading}
                             className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                             placeholder="Edited message"
                             {...field}
@@ -240,12 +214,11 @@ export default function ChatItem({
           )}
           <ActionTooltip label="Delete">
             <Trash
-              //   onClick={() =>
-              //     onOpen("deleteMessage", {
-              //       apiUrl: `${socketUrl}/${id}`,
-              //       query: socketQuery,
-              //     })
-              //   }
+              onClick={() =>
+                onOpen("deleteMessage", {
+                  details: { ...details, messageId: id },
+                })
+              }
               className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
             />
           </ActionTooltip>

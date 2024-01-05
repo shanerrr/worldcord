@@ -52,6 +52,49 @@ export default function SocketProvider({
             pages: newData,
           };
         });
+      } else if (type === "deleteMessage") {
+        queryClient.setQueryData([queryKey], (oldData: any) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0)
+            return oldData;
+          const newData = oldData.pages.map((page: any) => {
+            return {
+              ...page,
+              messages: page.messages.filter(
+                (item: MessageWithMemberWithProfile) => item.id !== message.id
+              ),
+            };
+          });
+
+          return {
+            ...oldData,
+            pages: newData,
+          };
+        });
+      } else if (type === "updateMessage") {
+        queryClient.setQueryData([queryKey], (oldData: any) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0)
+            return oldData;
+          const newData = oldData.pages.map((page: any) => {
+            return {
+              ...page,
+              messages: page.messages.map(
+                (item: MessageWithMemberWithProfile) => {
+                  if (item.id === message.id)
+                    return {
+                      ...item,
+                      content: message.content,
+                    };
+                  return item;
+                }
+              ),
+            };
+          });
+
+          return {
+            ...oldData,
+            pages: newData,
+          };
+        });
       }
     };
     return () => {
