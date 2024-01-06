@@ -1,4 +1,3 @@
-import { Profile } from "@prisma/client";
 import ServerSidebar from "@worldcord/components/server/server-sidebar";
 import {
   ResizableHandle,
@@ -6,11 +5,15 @@ import {
   ResizablePanelGroup,
 } from "@worldcord/components/ui/resizable";
 
-import { ServerWithMembersWithProfiles } from "@worldcord/types";
+import {
+  Server,
+  User,
+  Channel,
+} from "@prisma/client";
 
 type ServerMainProps = {
-  server: ServerWithMembersWithProfiles;
-  user: Profile | null;
+  server: Server & { channels: Channel[] };
+  user: User;
   children: React.ReactNode;
 };
 
@@ -21,12 +24,9 @@ export default async function ServerMain({
 }: ServerMainProps) {
   return (
     <main className="h-full w-full flex">
-      {/* <ServerSidebar server={server} user={user!} />
-      <div className="flex-1">{children}</div> */}
-
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={35}>
-          <ServerSidebar server={server} user={user!} />
+          <ServerSidebar server={server} user={user} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={80}>{children}</ResizablePanel>

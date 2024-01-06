@@ -6,14 +6,15 @@ import { useEffect, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { cn } from "@worldcord/lib/utils";
 
-import ActionTooltip from "@worldcord/components/action-tooltip";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
 } from "@worldcord/components/ui/form";
+import ActionTooltip from "@worldcord/components/action-tooltip";
 import { Input } from "@worldcord/components/ui/input";
 import { Button } from "@worldcord/components/ui/button";
 import { UserAvatar } from "@worldcord/components/user-avatar";
@@ -22,14 +23,17 @@ import { MessageApi } from "@worldcord/apis";
 
 import { Edit, FileIcon, Trash } from "lucide-react";
 
-import { Member, MemberRole, Profile } from "@prisma/client";
-import { cn } from "@worldcord/lib/utils";
+import {
+  Member,
+  User,
+  MemberRole,
+} from "@prisma/client";
 
 interface ChatItemProps {
   id: string;
   content: string;
   member: Member & {
-    profile: Profile;
+    user: User;
   };
   timestamp: string;
   fileUrl: string | null;

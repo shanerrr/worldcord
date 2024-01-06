@@ -1,10 +1,15 @@
 "use client";
 
-import { ChannelType, MemberRole } from "@prisma/client";
 import { Plus, Settings } from "lucide-react";
 
 import { ServerWithMembersWithProfiles } from "@worldcord/types";
 import ActionTooltip from "../action-tooltip";
+
+import {
+  ChannelType,
+  MemberRole,
+} from "@prisma/client";
+
 // import { useModal } from "@/hooks/use-modal-store";
 
 interface ServerSectionProps {
@@ -15,13 +20,13 @@ interface ServerSectionProps {
   server?: ServerWithMembersWithProfiles;
 }
 
-export const ServerSection = ({
+export default function ServerSection({
   label,
   role,
   sectionType,
   channelType,
   server,
-}: ServerSectionProps) => {
+}: ServerSectionProps) {
   //   const { onOpen } = useModal();
 
   return (
@@ -51,4 +56,4 @@ export const ServerSection = ({
       )}
     </div>
   );
-};
+}

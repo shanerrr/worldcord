@@ -5,7 +5,12 @@ import { Button } from "../ui/button";
 import ActionTooltip from "@worldcord/components/action-tooltip";
 
 import { cn } from "@worldcord/lib/utils";
-import { Channel, ChannelType, MemberRole, Server } from "@prisma/client";
+import {
+  Channel,
+  ChannelType,
+  MemberRole,
+  Server,
+} from "@prisma/client";
 
 // import { ModalType, useModal } from "@/hooks/use-modal-store";
 
@@ -21,11 +26,11 @@ const iconMap = {
   [ChannelType.VIDEO]: Video,
 };
 
-export const ServerChannel = ({
+export default function ServerChannel({
   channel,
   server,
   role,
-}: ServerChannelProps) => {
+}: ServerChannelProps) {
   // const { onOpen } = useModal();
   const params = useParams();
   const router = useRouter();
@@ -81,4 +86,4 @@ export const ServerChannel = ({
       )}
     </Button>
   );
-};
+}

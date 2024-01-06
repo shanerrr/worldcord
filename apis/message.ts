@@ -1,9 +1,15 @@
+import {
+  Message,
+  User,
+  Member,
+} from "@prisma/client";
+
 export const MessageApi = {
   create: async (
     serverId: string,
     channelId: string,
     body: { memberId: string; content: string }
-  ) => {
+  ): Promise<{ msg: string }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages`,
       {
@@ -23,7 +29,10 @@ export const MessageApi = {
     serverId: string,
     channelId: string,
     pageParam: string | undefined
-  ) => {
+  ): Promise<{
+    messages: Array<Message & { member: Member & { user: User } }>;
+    cursor: string | undefined;
+  }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages?cursor=${pageParam}&batch=15`,
       {
@@ -42,7 +51,7 @@ export const MessageApi = {
     channelId: string,
     id: string,
     body: { content: string }
-  ) => {
+  ): Promise<{ msg: string }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {
@@ -58,7 +67,11 @@ export const MessageApi = {
 
     return res.json();
   },
-  delete: async (serverId: string, channelId: string, id: string) => {
+  delete: async (
+    serverId: string,
+    channelId: string,
+    id: string
+  ): Promise<{ msg: string }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {

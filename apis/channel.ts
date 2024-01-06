@@ -1,5 +1,10 @@
+import { Channel } from "@prisma/client";
+
 export const ChannelAPI = {
-  get: async (serverId: string, channelId: string) => {
+  get: async (
+    serverId: string,
+    channelId: string
+  ): Promise<{ channel: Channel }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}`,
       {
@@ -11,7 +16,7 @@ export const ChannelAPI = {
 
     return res.json();
   },
-  getFirst: async (id: string) => {
+  getFirst: async (id: string): Promise<{ channel: Channel }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=first`,
       {
@@ -23,7 +28,7 @@ export const ChannelAPI = {
 
     return res.json();
   },
-  getAll: async (id: string) => {
+  getAll: async (id: string): Promise<{ channels: Channel[] }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=all`,
       {

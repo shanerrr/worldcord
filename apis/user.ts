@@ -1,7 +1,9 @@
 import { currentUser } from "@clerk/nextjs";
 
+import { User } from "@prisma/client";
+
 export const UserAPI = {
-  findOrCreate: async () => {
+  findOrCreate: async (): Promise<{ user: User }> => {
     const user = await currentUser();
 
     if (!user) return;

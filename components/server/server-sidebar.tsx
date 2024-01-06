@@ -1,30 +1,28 @@
 import Image from "next/image";
 
-import { ServerHeader } from "./server-header";
-import { ServerSection } from "./server-section";
-import { ServerChannel } from "./server-channel";
-import { ServerSearch } from "./server-search";
+import ServerHeader from "./server-header";
+import ServerSection from "./server-section";
+import ServerChannel from "./server-channel";
+import ServerSearch from "./server-search";
 import NavigationBottom from "../navigation/navigation-bottom";
-
 import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 
-import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
+import { cn } from "@worldcord/lib/utils";
 
-import { ServerWithMembersWithProfiles } from "@worldcord/types";
+import { Hash, Mic, Video } from "lucide-react";
+
 import {
-  Profile,
+  User,
   ChannelType,
   Channel,
-  MemberRole,
-  Member,
+  Server,
 } from "@prisma/client";
 
 import { MemberAPI } from "@worldcord/apis";
-import { cn } from "@worldcord/lib/utils";
 
 type ServerSidebarProps = {
-  server: ServerWithMembersWithProfiles;
-  user: Profile;
+  server: Server & { channels: Channel[] };
+  user: User;
 };
 
 export default async function ServerSidebar({
@@ -32,7 +30,6 @@ export default async function ServerSidebar({
   user,
 }: ServerSidebarProps) {
   const { members } = await MemberAPI.getAll(server.id);
-
   const { TEXT, AUDIO, VIDEO } = server.channels.reduce<
     Record<string, Channel[]>
   >((acc, cur) => {
@@ -43,7 +40,7 @@ export default async function ServerSidebar({
   }, {});
 
   const role = user
-    ? members.find((member: Member) => member.userId === user!.id)?.role
+    ? members.find((member) => member.userId === user!.id)?.role
     : null;
 
   return (
@@ -77,13 +74,13 @@ export default async function ServerSidebar({
                 data: VIDEO?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
-                  icon: <Mic className="mr-2 h-4 w-4" />,
+                  icon: <Video className="mr-2 h-4 w-4" />,
                 })),
               },
               {
                 label: "Members",
                 type: "member",
-                data: members?.map((member: Member) => ({
+                data: members?.map((member) => ({
                   id: member.id,
                   name: "",
                   icon: (

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { UserAPI, MemberAPI, ServerAPI, initalServer } from "@worldcord/apis";
+import { UserAPI, MemberAPI, ServerAPI } from "@worldcord/apis";
 import ServerMain from "@worldcord/components/server/server-main";
 
 export default async function MainLayout({

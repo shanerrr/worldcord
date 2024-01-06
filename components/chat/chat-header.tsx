@@ -1,4 +1,5 @@
 import { ChannelType } from "@prisma/client";
+
 import { Hash, Volume2 } from "lucide-react";
 
 type ChatHeaderProps = { name: string; type: ChannelType };

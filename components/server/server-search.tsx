@@ -4,8 +4,6 @@ import { Hash, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { cn } from "@worldcord/lib/utils";
-
 import { Button } from "../ui/button";
 import {
   CommandDialog,
@@ -30,7 +28,7 @@ interface ServerSearchProps {
   }[];
 }
 
-export const ServerSearch = ({ data }: ServerSearchProps) => {
+export default function ServerSearch({ data }: ServerSearchProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
@@ -107,4 +105,4 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
       </CommandDialog>
     </>
   );
-};
+}

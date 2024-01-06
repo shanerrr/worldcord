@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
-import { ServerWithMembersWithProfiles } from "@worldcord/types";
-import { MemberRole } from "@prisma/client";
+
+import { MemberRole, Server } from "@prisma/client";
+
 import { ChevronDown, PlusCircle, Settings, Trash } from "lucide-react";
 
 import {
@@ -11,14 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@worldcord/components/ui/dropdown-menu";
-// import { useModal } from "@/hooks/use-modal-store";
 
 interface ServerHeaderProps {
-  server: ServerWithMembersWithProfiles;
+  server: Server;
   role?: MemberRole | null;
 }
 
-export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
+export default function ServerHeader({ server, role }: ServerHeaderProps) {
   //   const { onOpen } = useModal();
 
   const isAdmin = role === MemberRole.ADMIN;
@@ -78,4 +78,4 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}

@@ -2,7 +2,6 @@
 
 import { Fragment, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Member, Message, Profile } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
 
 import ChatWelcome from "./chat-welcome";
@@ -11,11 +10,15 @@ import ChatItem from "./chat-item";
 import useChatQuery from "@worldcord/hooks/use-chat-query";
 import useChatScroll from "@worldcord/hooks/use-chat-scroll";
 
-const DATE_FORMAT = "d MMM yyyy, HH:mm";
+import {
+  Message,
+  User,
+  Member,
+} from "@prisma/client";
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
-    profile: Profile;
+    user: User;
   };
 };
 

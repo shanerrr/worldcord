@@ -1,5 +1,10 @@
+import { User, Member } from "@prisma/client";
+
 export const MemberAPI = {
-  get: async (serverId: string, memberId: string) => {
+  get: async (
+    serverId: string,
+    memberId: string
+  ): Promise<{ member: Member }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members/${memberId}`,
       {
@@ -11,7 +16,9 @@ export const MemberAPI = {
 
     return res.json();
   },
-  getAll: async (id: string) => {
+  getAll: async (
+    id: string
+  ): Promise<{ members: Array<Member & { user: User }> }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/members`,
       {
@@ -23,7 +30,10 @@ export const MemberAPI = {
 
     return res.json();
   },
-  findOrCreate: async (serverId: string, userId: string) => {
+  findOrCreate: async (
+    serverId: string,
+    userId: string
+  ): Promise<{ member: Member }> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members`,
       {
