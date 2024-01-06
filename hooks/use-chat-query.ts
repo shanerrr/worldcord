@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { MessageApi } from "@worldcord/apis";
 
 interface ChatQueryProps {
   details: {
@@ -8,24 +9,12 @@ interface ChatQueryProps {
 }
 
 export default function useChatQuery({ details }: ChatQueryProps) {
-  const fetchMessages = async ({ pageParam = undefined }) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${details.serverId}/channels/${details.channelId}/messages?cursor=${pageParam}&batch=15`,
-      {
-        next: {
-          revalidate: 3600,
-        },
-      }
-    );
-
-    return res.json();
-  };
-
   const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       staleTime: 3600000,
       queryKey: [`channel:${details.channelId}`],
-      queryFn: fetchMessages,
+      queryFn: ({ pageParam = undefined }) =>
+        MessageApi.get(details.serverId, details.channelId, pageParam),
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => lastPage?.cursor,
 

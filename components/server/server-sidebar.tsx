@@ -4,6 +4,7 @@ import { ServerHeader } from "./server-header";
 import { ServerSection } from "./server-section";
 import { ServerChannel } from "./server-channel";
 import { ServerSearch } from "./server-search";
+import NavigationBottom from "../navigation/navigation-bottom";
 
 import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 
@@ -17,44 +18,13 @@ import {
   MemberRole,
   Member,
 } from "@prisma/client";
-import ActionTooltip from "../action-tooltip";
-import NavigationBottom from "../navigation/navigation-bottom";
+
 import { MemberAPI } from "@worldcord/apis";
+import { cn } from "@worldcord/lib/utils";
 
 type ServerSidebarProps = {
   server: ServerWithMembersWithProfiles;
   user: Profile;
-};
-
-const iconMap = {
-  [ChannelType.TEXT]: <Hash className="mr-2 h-4 w-4" />,
-  [ChannelType.AUDIO]: <Mic className="mr-2 h-4 w-4" />,
-  [ChannelType.VIDEO]: <Video className="mr-2 h-4 w-4" />,
-};
-
-const roleIconMap = (profile: Profile, role: MemberRole) => {
-  const iconMap = {
-    [MemberRole.GUEST]: null,
-    [MemberRole.MODERATOR]: (
-      <ShieldCheck size={16} className="text-purple-500" />
-    ),
-    [MemberRole.ADMIN]: <ShieldAlert size={16} className="text-rose-400" />,
-  };
-
-  return (
-    <div className="text-indigo-500 flex items-center gap-1 mr-2">
-      <ActionTooltip label={role} align="center" side="right">
-        <span className="">{iconMap[role]}</span>
-      </ActionTooltip>
-      <Image
-        className="rounded-full"
-        src={profile.imageUrl!}
-        alt={profile.username}
-        width={32}
-        height={32}
-      />
-    </div>
-  );
 };
 
 export default async function ServerSidebar({
@@ -89,7 +59,7 @@ export default async function ServerSidebar({
                 data: TEXT?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
-                  icon: iconMap[channel.type],
+                  icon: <Hash className="mr-2 h-4 w-4" />,
                 })),
               },
               {
@@ -98,7 +68,7 @@ export default async function ServerSidebar({
                 data: AUDIO?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
-                  icon: iconMap[channel.type],
+                  icon: <Mic className="mr-2 h-4 w-4" />,
                 })),
               },
               {
@@ -107,7 +77,7 @@ export default async function ServerSidebar({
                 data: VIDEO?.map((channel) => ({
                   id: channel.id,
                   name: channel.name,
-                  icon: iconMap[channel.type],
+                  icon: <Mic className="mr-2 h-4 w-4" />,
                 })),
               },
               {
@@ -115,8 +85,33 @@ export default async function ServerSidebar({
                 type: "member",
                 data: members?.map((member: Member) => ({
                   id: member.id,
-                  name: member.user.username,
-                  icon: roleIconMap(member.user, member.role),
+                  name: "",
+                  icon: (
+                    <div className="flex justify-between w-full items-center">
+                      <div className="flex items-center gap-2">
+                        <Image
+                          className="rounded-full"
+                          src={member.user.imageUrl!}
+                          alt={member.user.username}
+                          quality={100}
+                          width={40}
+                          height={40}
+                        />
+                        <span
+                          className={cn({
+                            "text-rose-500 font-bold": member.role === "ADMIN",
+                          })}
+                        >
+                          {member.user.username}
+                        </span>
+                      </div>
+                      {member.role !== "GUEST" && (
+                        <span className="text-primary/50 lowercase text-xs">
+                          {member.role}
+                        </span>
+                      )}
+                    </div>
+                  ),
                 })),
               },
             ]}

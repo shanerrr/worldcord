@@ -1,8 +1,11 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Hash, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
+import { cn } from "@worldcord/lib/utils";
+
 import { Button } from "../ui/button";
 import {
   CommandDialog,
@@ -19,9 +22,9 @@ interface ServerSearchProps {
     type: "channel" | "member";
     data:
       | {
-          icon: React.ReactNode;
-          name: string;
           id: string;
+          name: string;
+          icon: React.ReactNode;
         }[]
       | undefined;
   }[];
@@ -86,11 +89,10 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data?.map(({ id, icon, name }) => {
+                {data?.map(({ id, name, icon }) => {
                   return (
                     <CommandItem
                       key={id}
-                    
                       onSelect={() => onClick({ id, type })}
                     >
                       {icon}

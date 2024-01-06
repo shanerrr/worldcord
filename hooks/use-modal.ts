@@ -2,6 +2,7 @@ import { Channel, ChannelType, Server } from "@prisma/client";
 import { create } from "zustand";
 
 export type ModalType =
+  | "countryRoute"
   | "createServer"
   | "invite"
   | "editServer"
@@ -22,6 +23,9 @@ interface ModalData {
     serverId?: string;
     channelId?: string;
     messageId?: string;
+    countryName?: string;
+    iso_a2?: string;
+    iso_n3?: string;
   };
 }
 

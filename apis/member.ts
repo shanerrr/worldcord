@@ -1,7 +1,7 @@
 export const MemberAPI = {
   get: async (serverId: string, memberId: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/members/${memberId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members/${memberId}`,
       {
         method: "GET",
       }
@@ -13,7 +13,7 @@ export const MemberAPI = {
   },
   getAll: async (id: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${id}/members`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/members`,
       {
         method: "GET",
       }
@@ -25,7 +25,7 @@ export const MemberAPI = {
   },
   findOrCreate: async (serverId: string, userId: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/members`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members`,
       {
         method: "PUT",
         headers: {

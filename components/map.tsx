@@ -1,20 +1,16 @@
 "use client";
+
 import mapboxgl from "mapbox-gl";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
+import { useModal } from "@worldcord/hooks/use-modal";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import MapDialog from "./map-dialog";
 
 export default function Mapbox() {
   const mapContainer = useRef<null | HTMLDivElement>(null);
   const map = useRef<null | mapboxgl.Map>(null);
-  const [choosenCountry, setChoosenCountry] = useState<MapState>({
-    open: false,
-  });
 
-  const closeDrawer = () => {
-    setChoosenCountry({ ...choosenCountry, open: false });
-  };
+  const { onOpen } = useModal();
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -111,12 +107,20 @@ export default function Mapbox() {
         if (features.length) {
           // brk_name
           //iso_a3
-          setChoosenCountry({
-            open: true,
-            name: features[0].properties!.brk_name,
-            iso_a2: features[0].properties!.iso_a2,
-            iso_n3: features[0].properties!.iso_n3,
+
+          onOpen("countryRoute", {
+            details: {
+              countryName: features[0].properties!.brk_name,
+              iso_a2: features[0].properties!.iso_a2,
+              iso_n3: features[0].properties!.iso_n3,
+            },
           });
+          // setChoosenCountry({
+          //   open: true,
+          //   name: features[0].properties!.brk_name,
+          //   iso_a2: features[0].properties!.iso_a2,
+          //   iso_n3: features[0].properties!.iso_n3,
+          // });
           // router.push(`/servers/${features[0].properties!.iso_n3}`);
         }
       });
@@ -185,13 +189,5 @@ export default function Mapbox() {
     });
   }, []);
 
-  return (
-    <section className="h-full w-full relative">
-      <div
-        ref={mapContainer}
-        className="absolute inset-0 map-container h-full w-full"
-      />
-      <MapDialog data={choosenCountry} close={closeDrawer} />
-    </section>
-  );
+  return <div ref={mapContainer} className="map-container h-full w-full" />;
 }

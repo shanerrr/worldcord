@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { SignOutButton } from "@clerk/nextjs";
 
-import Mapbox from "@worldcord/components/map/map";
+import Mapbox from "@worldcord/components/map";
 
 import { UserAPI } from "@worldcord/apis/user";
 

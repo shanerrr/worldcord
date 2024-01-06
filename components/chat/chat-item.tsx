@@ -16,13 +16,14 @@ import {
 } from "@worldcord/components/ui/form";
 import { Input } from "@worldcord/components/ui/input";
 import { Button } from "@worldcord/components/ui/button";
-import { UserAvatar } from "../user-avatar";
+import { UserAvatar } from "@worldcord/components/user-avatar";
 import { useModal } from "@worldcord/hooks/use-modal";
 import { MessageApi } from "@worldcord/apis";
 
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
+import { Edit, FileIcon, Trash } from "lucide-react";
 
 import { Member, MemberRole, Profile } from "@prisma/client";
+import { cn } from "@worldcord/lib/utils";
 
 interface ChatItemProps {
   id: string;
@@ -39,12 +40,6 @@ interface ChatItemProps {
     channelId: string;
   };
 }
-
-const roleIconMap = {
-  GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  ADMIN: <ShieldAlert className="h-4 w-4 ml-2 text-rose-500" />,
-};
 
 const formSchema = z.object({
   content: z.string().min(1),
@@ -73,10 +68,12 @@ export default function ChatItem({
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await MessageApi.update(details.serverId, details.channelId, id, {
-      ...values,
-      // memberId: member,
-    });
+    if (values.content !== content) {
+      await MessageApi.update(details.serverId, details.channelId, id, {
+        ...values,
+        // memberId: member,
+      });
+    }
     form.reset();
     setIsEditing(false);
   };
@@ -117,13 +114,16 @@ export default function ChatItem({
             <div className="flex items-center">
               <p
                 // onClick={onMemberClick}
-                className="font-semibold text-sm hover:underline cursor-pointer"
+                className={cn(
+                  "font-semibold text-base hover:underline cursor-pointer",
+                  {
+                    "text-rose-500": member.role === "ADMIN",
+                    "text-indigo-500": member.role === "MODERATOR",
+                  }
+                )}
               >
                 {member.user.username}
               </p>
-              <ActionTooltip label={member.role}>
-                {roleIconMap[member.role]}
-              </ActionTooltip>
             </div>
             <span className="text-xs text-zinc-500 dark:text-zinc-400">
               {timestamp}
@@ -195,8 +195,21 @@ export default function ChatItem({
                   Save
                 </Button>
               </form>
-              <span className="text-[10px] mt-1 text-zinc-400">
-                Press escape to cancel, enter to save
+              <span className="text-xs mt-1 text-zinc-400">
+                Press escape to{" "}
+                <span
+                  className="underline text-blue-600 cursor-pointer"
+                  onClick={() => setIsEditing(false)}
+                >
+                  cancel
+                </span>
+                , enter to{" "}
+                <span
+                  className="underline text-blue-600 cursor-pointer"
+                  onClick={form.handleSubmit(onSubmit)}
+                >
+                  save
+                </span>
               </span>
             </Form>
           )}

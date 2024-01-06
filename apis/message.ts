@@ -5,7 +5,7 @@ export const MessageApi = {
     body: { memberId: string; content: string }
   ) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/channels/${channelId}/messages`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages`,
       {
         method: "POST",
         headers: {
@@ -19,7 +19,24 @@ export const MessageApi = {
 
     return res.json();
   },
+  get: async (
+    serverId: string,
+    channelId: string,
+    pageParam: string | undefined
+  ) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages?cursor=${pageParam}&batch=15`,
+      {
+        next: {
+          revalidate: 3600,
+        },
+      }
+    );
 
+    if (!res.ok) throw new Error("Error getting Messages!");
+
+    return res.json();
+  },
   update: async (
     serverId: string,
     channelId: string,
@@ -27,7 +44,7 @@ export const MessageApi = {
     body: { content: string }
   ) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/channels/${channelId}/messages/${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {
         method: "PATCH",
         headers: {
@@ -43,7 +60,7 @@ export const MessageApi = {
   },
   delete: async (serverId: string, channelId: string, id: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/channels/${channelId}/messages/${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {
         method: "DELETE",
       }

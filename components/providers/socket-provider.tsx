@@ -26,7 +26,7 @@ export default function SocketProvider({
 
   useEffect(() => {
     /* WS initialization and cleanup */
-    ws.current = new WebSocket("ws://172.29.146.185:4000");
+    ws.current = new WebSocket("ws://172.29.156.0:4000");
     ws.current.onopen = () => setConnected(true);
     ws.current.onclose = () => setConnected(false);
     ws.current.onmessage = (m) => {
@@ -83,6 +83,7 @@ export default function SocketProvider({
                     return {
                       ...item,
                       content: message.content,
+                      updatedAt: message.updatedAt,
                     };
                   return item;
                 }

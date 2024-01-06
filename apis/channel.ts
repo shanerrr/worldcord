@@ -1,7 +1,7 @@
 export const ChannelAPI = {
   get: async (serverId: string, channelId: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${serverId}/channels/${channelId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}`,
       {
         method: "GET",
       }
@@ -13,7 +13,7 @@ export const ChannelAPI = {
   },
   getFirst: async (id: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${id}/channels?filter=first`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=first`,
       {
         method: "GET",
       }
@@ -25,7 +25,7 @@ export const ChannelAPI = {
   },
   getAll: async (id: string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/server/${id}/channels?filter=all`,
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=all`,
       {
         method: "GET",
       }
