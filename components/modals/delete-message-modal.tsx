@@ -13,7 +13,7 @@ import { useModal } from "@worldcord/hooks/use-modal";
 import { Button } from "@worldcord/components/ui/button";
 import { MessageApi } from "@worldcord/apis";
 
-export const DeleteMessageModal = () => {
+export default function DeleteMessageModal() {
   const {
     type,
     data: { details },
@@ -66,4 +66,4 @@ export const DeleteMessageModal = () => {
       </CardContent>
     </Card>
   );
-};
+}

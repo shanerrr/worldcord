@@ -1,6 +1,25 @@
-import { Channel } from "@prisma/client";
+import { Channel, ChannelType } from "@prisma/client";
 
 export const ChannelAPI = {
+  create: async (
+    serverId: string,
+    body: { name: string; type: ChannelType }
+  ): Promise<{ channel: Channel }> => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!res.ok) throw new Error("Error getting channels!!");
+
+    return res.json();
+  },
   get: async (
     serverId: string,
     channelId: string

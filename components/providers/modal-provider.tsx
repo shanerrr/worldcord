@@ -14,17 +14,20 @@
 
 import { useModal } from "@worldcord/hooks/use-modal";
 import { useEffect, useRef } from "react";
-import { DeleteMessageModal } from "../modals/delete-message-modal";
+import DeleteMessageModal from "../modals/delete-message-modal";
 import CountryRouteModal from "../modals/country-route-modal";
+import CreateChannelModal from "../modals/create-channel-modal";
 
 const modalMap = {
   deleteMessage: <DeleteMessageModal />,
   countryRoute: <CountryRouteModal />,
+  createChannel: <CreateChannelModal />,
 };
 
 export default function ModalProvider() {
   const ref = useRef(null);
-  const { data, onInital, type } = useModal();
+
+  const { onInital, type } = useModal();
 
   useEffect(() => {
     onInital(ref);
@@ -40,17 +43,6 @@ export default function ModalProvider() {
       className="bg-transparent backdrop:bg-black/50 backdrop:backdrop-blur-s"
     >
       {modalMap[type!]}
-      {/* <CreateServerModal /> */}
-      {/* <InviteModal />
-      <EditServerModal />
-      <MembersModal />
-      <CreateChannelModal />
-      <LeaveServerModal />
-      <DeleteServerModal />
-      <DeleteChannelModal />
-      <EditChannelModal />
-      <MessageFileModal />
-      <DeleteMessageModal /> */}
     </dialog>
   );
 }

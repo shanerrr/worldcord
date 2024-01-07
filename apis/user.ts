@@ -6,7 +6,7 @@ export const UserAPI = {
   findOrCreate: async (): Promise<{ user: User }> => {
     const user = await currentUser();
 
-    if (!user) return;
+    if (!user) return { user: null };
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
       method: "PUT",

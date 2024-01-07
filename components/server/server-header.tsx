@@ -1,10 +1,6 @@
 "use client";
+
 import Image from "next/image";
-
-import { MemberRole, Server } from "@prisma/client";
-
-import { ChevronDown, PlusCircle, Settings, Trash } from "lucide-react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +8,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@worldcord/components/ui/dropdown-menu";
+import { ChevronDown, PlusCircle, Settings, Trash } from "lucide-react";
+
+import { useModal } from "@worldcord/hooks/use-modal";
+import { MemberRole, Server } from "@prisma/client";
 
 interface ServerHeaderProps {
   server: Server;
@@ -19,7 +19,7 @@ interface ServerHeaderProps {
 }
 
 export default function ServerHeader({ server, role }: ServerHeaderProps) {
-  //   const { onOpen } = useModal();
+  const { onOpen } = useModal();
 
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
@@ -58,7 +58,13 @@ export default function ServerHeader({ server, role }: ServerHeaderProps) {
         )}
         {isModerator && (
           <DropdownMenuItem
-            // onClick={() => onOpen("createChannel")}
+            onClick={() =>
+              onOpen("createChannel", {
+                details: {
+                  serverId: server.id,
+                },
+              })
+            }
             className="px-3 py-2 text-sm cursor-pointer"
           >
             Create Channel
