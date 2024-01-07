@@ -3,12 +3,12 @@
 import { createContext, useEffect, useContext, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-type WebSocketContextType = {
+import { MessageWithMemberWithProfile } from "@worldcord/types";
+
+const SocketContext = createContext<{
   socket: WebSocket | undefined;
   isConnected: boolean;
-};
-
-const SocketContext = createContext<WebSocketContextType>({
+}>({
   socket: undefined,
   isConnected: false,
 });
@@ -16,8 +16,10 @@ const SocketContext = createContext<WebSocketContextType>({
 export const useSocket = () => useContext(SocketContext);
 
 export default function SocketProvider({
+  serverId,
   children,
 }: {
+  serverId: string;
   children: React.ReactNode;
 }) {
   const ws = useRef<WebSocket>();
@@ -26,7 +28,9 @@ export default function SocketProvider({
 
   useEffect(() => {
     /* WS initialization and cleanup */
-    ws.current = new WebSocket("ws://172.29.156.0:4000");
+    ws.current = new WebSocket(
+      `ws://172.18.206.21:4000/api/websocket?server=${serverId}`
+    );
     ws.current.onopen = () => setConnected(true);
     ws.current.onclose = () => setConnected(false);
     ws.current.onmessage = (m) => {

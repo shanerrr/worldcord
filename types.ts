@@ -1,9 +1,4 @@
-import {
-  Server,
-  Member,
-  Channel,
-  User
-} from "@prisma/client";
+import { Message, Server, Member, Channel, User } from "@prisma/client";
 
 export type MapState = {
   name?: string;
@@ -14,4 +9,10 @@ export type MapState = {
 export type ServerWithMembersWithProfiles = Server & {
   members: (Member & { user: User })[];
   channels: Channel[];
+};
+
+export type MessageWithMemberWithProfile = Message & {
+  member: {
+    user: User;
+  };
 };

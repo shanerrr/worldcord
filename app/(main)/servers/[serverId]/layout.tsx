@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { UserAPI, MemberAPI, ServerAPI } from "@worldcord/apis";
+
 import ServerMain from "@worldcord/components/server/server-main";
+import SocketProvider from "@worldcord/components/providers/socket-provider";
 
 export default async function MainLayout({
   params,
@@ -21,7 +23,7 @@ export default async function MainLayout({
   return (
     <main className="h-full flex flex-col">
       <ServerMain server={server} user={user}>
-        {children}
+        <SocketProvider serverId={params.serverId}>{children}</SocketProvider>
       </ServerMain>
     </main>
   );
