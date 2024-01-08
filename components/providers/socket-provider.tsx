@@ -1,16 +1,16 @@
 "use client";
 
-import { createContext, useEffect, useContext, useRef, useState } from "react";
+import { createContext, useEffect, useContext, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { MessageWithMemberWithProfile } from "@worldcord/types";
 
 const SocketContext = createContext<{
   socket: WebSocket | undefined;
-  isConnected: boolean;
+  // isConnected: boolean;
 }>({
   socket: undefined,
-  isConnected: false,
+  // isConnected: false,
 });
 
 export const useSocket = () => useContext(SocketContext);
@@ -23,16 +23,16 @@ export default function SocketProvider({
   children: React.ReactNode;
 }) {
   const ws = useRef<WebSocket>();
-  const [connected, setConnected] = useState(false);
+  // const [connected, setConnected] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     /* WS initialization and cleanup */
     ws.current = new WebSocket(
-      `ws://172.18.206.21:4000/api/websocket?server=${serverId}`
+      `ws:/172.28.52.85:4000/api/websocket?server=${serverId}`
     );
-    ws.current.onopen = () => setConnected(true);
-    ws.current.onclose = () => setConnected(false);
+    // ws.current.onopen = () => setConnected(true);
+    // ws.current.onclose = () => setConnected(false);
     ws.current.onmessage = (m) => {
       const { type, queryKey, message } = JSON.parse(m.data);
       if (type === "newMessage") {
@@ -108,9 +108,7 @@ export default function SocketProvider({
   }, []);
 
   return (
-    <SocketContext.Provider
-      value={{ socket: ws.current, isConnected: connected }}
-    >
+    <SocketContext.Provider value={{ socket: ws.current }}>
       {children}
     </SocketContext.Provider>
   );

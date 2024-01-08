@@ -4,21 +4,16 @@ import ServerHeader from "./server-header";
 import ServerSection from "./server-section";
 import ServerChannel from "./server-channel";
 import ServerSearch from "./server-search";
-import NavigationBottom from "../navigation/navigation-bottom";
+import ServerFooter from "../navigation/navigation-bottom";
 import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 
 import { cn } from "@worldcord/lib/utils";
+import { MemberAPI } from "@worldcord/apis";
 
 import { Hash, Mic, Video } from "lucide-react";
 
-import {
-  User,
-  ChannelType,
-  Channel,
-  Server,
-} from "@prisma/client";
-
-import { MemberAPI } from "@worldcord/apis";
+//types
+import { User, ChannelType, Channel, Server } from "@prisma/client";
 
 type ServerSidebarProps = {
   server: Server & { channels: Channel[] };
@@ -154,43 +149,8 @@ export default async function ServerSidebar({
             </div>
           </div>
         )}
-        {!!VIDEO?.length && (
-          <div className="mb-2">
-            <ServerSection
-              sectionType="channels"
-              channelType={ChannelType.VIDEO}
-              role={role}
-              label="Video Channels"
-            />
-            <div className="space-y-[2px]">
-              {VIDEO.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  role={role}
-                  server={server}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {/* {!!members?.length && (
-          <div className="mb-2">
-            <ServerSection
-              sectionType="members"
-              role={role}
-              label="Members"
-              server={server}
-            />
-            <div className="space-y-[2px]">
-              {members.map((member) => (
-                <ServerMember key={member.id} member={member} server={server} />
-              ))}
-            </div>
-          </div>
-        )} */}
       </ScrollArea>
-      <NavigationBottom user={user} />
+      <ServerFooter user={user} />
     </div>
   );
 }

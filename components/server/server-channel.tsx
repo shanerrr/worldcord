@@ -5,12 +5,7 @@ import { Button } from "../ui/button";
 import ActionTooltip from "@worldcord/components/action-tooltip";
 
 import { cn } from "@worldcord/lib/utils";
-import {
-  Channel,
-  ChannelType,
-  MemberRole,
-  Server,
-} from "@prisma/client";
+import { Channel, ChannelType, MemberRole, Server } from "@prisma/client";
 
 // import { ModalType, useModal } from "@/hooks/use-modal-store";
 
@@ -51,7 +46,7 @@ export default function ServerChannel({
       onClick={onClick}
       variant="ghost"
       className={cn(
-        "group py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
+        "group py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1 justify-start",
         params?.channelId === channel.id && "bg-zinc-700/20 dark:bg-zinc-700"
       )}
     >
@@ -65,7 +60,7 @@ export default function ServerChannel({
       >
         {channel.name}
       </p>
-      {channel.name !== "general" && role !== MemberRole.GUEST && (
+      {role !== MemberRole.GUEST && (
         <div className="ml-auto flex items-center gap-x-2">
           <ActionTooltip label="Edit">
             <Edit
@@ -80,9 +75,6 @@ export default function ServerChannel({
             />
           </ActionTooltip>
         </div>
-      )}
-      {channel.name === "general" && (
-        <Lock className="ml-auto w-4 h-4 text-zinc-500 dark:text-zinc-400" />
       )}
     </Button>
   );

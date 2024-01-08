@@ -58,11 +58,6 @@ const channelMap = {
     icon: <Volume1 size={28} />,
     description: "Send messages, emojis and be sussy",
   },
-  VIDEO: {
-    type: "Video",
-    icon: <Video size={28} />,
-    description: "Send messages, emojis and be sussy",
-  },
 };
 
 export default function CreateChannelModal() {

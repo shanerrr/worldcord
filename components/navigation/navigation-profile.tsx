@@ -1,7 +1,7 @@
 "use client";
 import { useClerk } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,9 @@ import Image from "next/image";
 import { Skeleton } from "@worldcord/components/ui/skeleton";
 
 import { Button } from "../ui/button";
-import { Profile } from "@prisma/client";
+import { User } from "@prisma/client";
 
-export default function NavigationProfile({ user }: { user: Profile }) {
+export default function NavigationProfile({ user }: { user: User }) {
   const { signOut } = useClerk();
   const router = useRouter();
   return (
@@ -38,7 +38,7 @@ export default function NavigationProfile({ user }: { user: Profile }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem className="flex gap-2" onClick={() => null}>
-          <User size={20} />
+          {/* <User size={20} /> */}
           Profile
         </DropdownMenuItem>
         <DropdownMenuSeparator />
