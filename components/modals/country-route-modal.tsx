@@ -24,11 +24,12 @@ export default function CountryRouteModal() {
           <CardTitle className="text-center text-4xl flex justify-center gap-2">
             {data.details?.countryName}
             <Image
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk8AEAAFIATgDK/mEAAAAASUVORK5CYII="
               src={`https://flagsapi.com/${data.details?.iso_a2}/flat/64.png`}
               width={40}
               height={40}
               alt={data.details?.countryName!}
-              priority={true}
             />
           </CardTitle>
           <CardDescription className="pt-4 text-center">
