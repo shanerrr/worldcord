@@ -1,7 +1,7 @@
 import ChatHeader from "@worldcord/components/chat/chat-header";
 import ChatInput from "@worldcord/components/chat/chat-input";
 import ChatMessages from "@worldcord/components/chat/chat-messages";
-import { MediaRoom } from "@worldcord/components/media-room";
+import MediaRoom from "@worldcord/components/media-room";
 
 import { ChannelAPI, MemberAPI, UserAPI } from "@worldcord/apis";
 
@@ -47,9 +47,9 @@ export default async function ChannelPage({ params }: ChannelPagePros) {
             member={member.id}
           />
         </>
-      ) : (
-        <MediaRoom audio={true} channelId={channel.id} />
-      )}
+      ) : null
+      // <MediaRoom channelId={channel.id} />
+      }
     </div>
   );
 }

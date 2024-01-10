@@ -1,55 +1,100 @@
-"use client";
+("use client");
 
-import { useEffect, useState } from "react";
-import { LiveKitRoom, VideoConference } from "@livekit/components-react";
-import { useUser } from "@clerk/nextjs";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import AgoraRTC, { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
+import { useAgora } from "./providers/agora-provider";
 
-import "@livekit/components-styles";
+const TOKEN =
+  "007eJxTYHjl/PH+nuLbrNa2wmEq656VHd7UZ1ak+dNkYvAEyVMi+UkKDKYmlimWSZYmhobmpiZpacaWyYaplgaJiSkp5qmmlmmWre/npjYEMjJc/SbOysgAgSA+M0NOfg4DAwBBDR/F";
+const CHANNEL = "lol";
 
-interface MediaRoomProps {
-  channelId: string;
-  audio: boolean;
-}
+export default function VideoRoom() {
+  
+  const { client } = useAgora();
 
-export const MediaRoom = ({ channelId, audio }: MediaRoomProps) => {
-  const { user } = useUser();
-  const [token, setToken] = useState("");
+  const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
+  const [start, setStart] = useState(false);
+
+  // const { ready, tracks } = client.useMicrophoneAndCameraTracks();
 
   useEffect(() => {
-    if (!user?.username) return;
+    // function to initialise the SDK
+    let init = async (name: string) => {
+      client.on("user-published", async (user, mediaType) => {
+        await client.subscribe(user, mediaType);
+        console.log("subscribe success");
+        if (mediaType === "video") {
+          setUsers((prevUsers) => {
+            return [...prevUsers, user];
+          });
+        }
+        if (mediaType === "audio") {
+          user.audioTrack?.play();
+        }
+      });
 
-    (async () => {
-      try {
-        const resp = await fetch(
-          `/api/get-participant-token?room=${channelId}&username=${user?.username}`
-        );
-        const data = await resp.json();
-        setToken(data.token);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }, [user?.username, channelId]);
+      client.on("user-unpublished", (user, type) => {
+        console.log("unpublished", user, type);
+        if (type === "audio") {
+          user.audioTrack?.stop();
+        }
+        if (type === "video") {
+          setUsers((prevUsers) => {
+            return prevUsers.filter((User) => User.uid !== user.uid);
+          });
+        }
+      });
 
-  if (token === "") {
-    return (
-      <div className="flex flex-col flex-1 justify-center items-center">
-        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading...</p>
-      </div>
-    );
-  }
+      client.on("user-left", (user) => {
+        console.log("leaving", user);
+        setUsers((prevUsers) => {
+          return prevUsers.filter((User) => User.uid !== user.uid);
+        });
+      });
+
+      await client.join(
+        process.env.NEXT_PUBLIC_AGORA_APP_ID!,
+        name,
+        TOKEN,
+        null
+      );
+      if (tracks) await client.publish([tracks[0], tracks[1]]);
+      setStart(true);
+    };
+
+    if (ready && tracks) {
+      console.log("init ready");
+      init(CHANNEL);
+    }
+  }, [CHANNEL, client, ready, tracks]);
 
   return (
-    <LiveKitRoom
-      data-lk-theme="default"
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      token={token}
-      connect={true}
-      audio={audio}
-    >
-      <VideoConference />
-    </LiveKitRoom>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 200px)",
+        }}
+      >
+        {users.map((user) => (
+          <VideoPlayer key={user.uid} user={user} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const VideoPlayer = ({ user }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    user.videoTrack.play(ref.current);
+  }, []);
+
+  return (
+    <div>
+      Uid: {user.uid}
+      <div ref={ref} style={{ width: "200px", height: "200px" }}></div>
+    </div>
   );
 };

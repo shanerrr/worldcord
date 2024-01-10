@@ -1,10 +1,18 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { UserAPI, MemberAPI, ServerAPI } from "@worldcord/apis";
 
 import ServerMain from "@worldcord/components/server/server-main";
+// import AgoraProvider from "@worldcord/components/providers/agora-provider";
 import SocketProvider from "@worldcord/components/providers/socket-provider";
 
-export default async function MainLayout({
+import { UserAPI, MemberAPI, ServerAPI } from "@worldcord/apis";
+
+export const metadata: Metadata = {
+  title: "WorldCord",
+  description: "Explore what others are doing around the world!",
+};
+
+export default async function ServerLayout({
   params,
   children,
 }: {
