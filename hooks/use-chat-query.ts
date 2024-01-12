@@ -1,11 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { MessageApi } from "@worldcord/apis";
 
-import {
-  Message,
-  User,
-  Member,
-} from "@prisma/client";
+import { Message, User, Member } from "@prisma/client";
 interface ChatQueryProps {
   details: {
     serverId: string;
@@ -29,9 +25,13 @@ export default function useChatQuery({ details }: ChatQueryProps) {
         ),
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => lastPage?.cursor,
-
-      // refetchInterval: isConnected ? false : 1000,
     });
 
-  return { data, status, fetchNextPage, hasNextPage, isFetchingNextPage };
+  return {
+    data,
+    status,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  };
 }

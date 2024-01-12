@@ -21,11 +21,6 @@ export default function AgoraProvider({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    const 
-
-  }, []);
-
   return (
     <AgoraContext.Provider value={{ client }}>{children}</AgoraContext.Provider>
   );

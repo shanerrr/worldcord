@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
 
@@ -10,11 +10,7 @@ import ChatItem from "./chat-item";
 import useChatQuery from "@worldcord/hooks/use-chat-query";
 import useChatScroll from "@worldcord/hooks/use-chat-scroll";
 
-import {
-  Message,
-  User,
-  Member,
-} from "@prisma/client";
+import { Message, User, Member } from "@prisma/client";
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
@@ -45,7 +41,8 @@ export default function ChatMessages({
 
   useChatScroll({
     messagesDivRef,
-    hasMoreMessages: !isFetchingNextPage || hasNextPage,
+    status,
+    hasMoreMessages: !isFetchingNextPage && hasNextPage,
     fetchMoreMessages: fetchNextPage,
   });
 
@@ -87,7 +84,6 @@ export default function ChatMessages({
                 member={message.member}
                 content={message.content}
                 // fileUrl={message.fileUrl}
-                // deleted={message.deleted}
                 fileUrl={null}
                 timestamp={formatDistanceToNow(new Date(message.createdAt))}
                 isUpdated={message.updatedAt !== message.createdAt}
