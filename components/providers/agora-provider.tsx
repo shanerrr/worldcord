@@ -1,27 +1,16 @@
 "use client";
 
-import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng";
-import { useContext, createContext, useEffect } from "react";
-
-const client = AgoraRTC.createClient({
-  mode: "rtc",
-  codec: "vp8",
-});
-
-const AgoraContext = createContext<{
-  client: IAgoraRTCClient;
-}>({
-  client: client,
-});
-
-export const useAgora = () => useContext(AgoraContext);
+import AgoraRTC, { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 
 export default function AgoraProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <AgoraContext.Provider value={{ client }}>{children}</AgoraContext.Provider>
+  // Initialize Agora Client
+  const agoraClient = useRTCClient(
+    AgoraRTC.createClient({ codec: "vp8", mode: "rtc" })
   );
+
+  return <AgoraRTCProvider client={agoraClient}>{children}</AgoraRTCProvider>;
 }

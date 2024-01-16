@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import ServerMain from "@worldcord/components/server/server-main";
-// import AgoraProvider from "@worldcord/components/providers/agora-provider";
 import SocketProvider from "@worldcord/components/providers/socket-provider";
+import AgoraProvider from "@worldcord/components/providers/agora-provider";
 
 import { UserAPI, MemberAPI, ServerAPI } from "@worldcord/apis";
 
@@ -31,7 +31,9 @@ export default async function ServerLayout({
   return (
     <main className="h-full flex flex-col">
       <ServerMain server={server} user={user}>
-        <SocketProvider serverId={params.serverId}>{children}</SocketProvider>
+        <SocketProvider serverId={params.serverId}>
+          <AgoraProvider>{children}</AgoraProvider>
+        </SocketProvider>
       </ServerMain>
     </main>
   );

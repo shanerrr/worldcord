@@ -1,100 +1,102 @@
-("use client");
+"use client";
 
-import { useEffect, useState, useRef } from "react";
-import AgoraRTC, { IAgoraRTCRemoteUser } from "agora-rtc-sdk-ng";
-import { useAgora } from "./providers/agora-provider";
+import { useState } from "react";
 
-const TOKEN =
-  "007eJxTYHjl/PH+nuLbrNa2wmEq656VHd7UZ1ak+dNkYvAEyVMi+UkKDKYmlimWSZYmhobmpiZpacaWyYaplgaJiSkp5qmmlmmWre/npjYEMjJc/SbOysgAgSA+M0NOfg4DAwBBDR/F";
-const CHANNEL = "lol";
-
-export default function VideoRoom() {
+import {
+  LocalUser,
+  RemoteUser,
+  useJoin,
+  useLocalCameraTrack,
+  useLocalMicrophoneTrack,
+  usePublish,
+  useRemoteAudioTracks,
+  useRemoteUsers,
   
-  const { client } = useAgora();
+} from "agora-rtc-react";
 
-  const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
-  const [start, setStart] = useState(false);
+export default function MediaRoom({ channelId }: { channelId: string }) {
+  // const { channelName } = useParams(); //pull the channel name from the param
 
-  // const { ready, tracks } = client.useMicrophoneAndCameraTracks();
+  // set the connection state
+  const [activeConnection, setActiveConnection] = useState(true);
 
-  useEffect(() => {
-    // function to initialise the SDK
-    let init = async (name: string) => {
-      client.on("user-published", async (user, mediaType) => {
-        await client.subscribe(user, mediaType);
-        console.log("subscribe success");
-        if (mediaType === "video") {
-          setUsers((prevUsers) => {
-            return [...prevUsers, user];
-          });
-        }
-        if (mediaType === "audio") {
-          user.audioTrack?.play();
-        }
-      });
+  // track the mic/video state - Turn on Mic and Camera On
+  const [micOn, setMic] = useState(true);
+  const [cameraOn, setCamera] = useState(false);
 
-      client.on("user-unpublished", (user, type) => {
-        console.log("unpublished", user, type);
-        if (type === "audio") {
-          user.audioTrack?.stop();
-        }
-        if (type === "video") {
-          setUsers((prevUsers) => {
-            return prevUsers.filter((User) => User.uid !== user.uid);
-          });
-        }
-      });
+  // get local video and mic tracks
+  const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
+  const { localCameraTrack } = useLocalCameraTrack(cameraOn);
 
-      client.on("user-left", (user) => {
-        console.log("leaving", user);
-        setUsers((prevUsers) => {
-          return prevUsers.filter((User) => User.uid !== user.uid);
-        });
-      });
+  // to leave the call
+  // const navigate = useNavigate();
 
-      await client.join(
-        process.env.NEXT_PUBLIC_AGORA_APP_ID!,
-        name,
-        TOKEN,
-        null
-      );
-      if (tracks) await client.publish([tracks[0], tracks[1]]);
-      setStart(true);
-    };
+  // Join the channel
+  useJoin(
+    {
+      appid: process.env.NEXT_PUBLIC_AGORA_APP_ID!,
+      channel: "test",
+      token:
+        "007eJxTYCjJdguYvXmur+L9o88MJ81X9T9/8JRAM/NW+TWxLWsnJ4UqMJiaWKZYJlmaGBqam5qkpRlbJhumWhokJqakmKeaWqZZyjxfmtoQyMigcDKLkZEBAkF8FoaS1OISBgYAP88fYQ==",
+    },
+    activeConnection
+  );
 
-    if (ready && tracks) {
-      console.log("init ready");
-      init(CHANNEL);
-    }
-  }, [CHANNEL, client, ready, tracks]);
+  usePublish([localMicrophoneTrack, localCameraTrack]);
+
+  //remote users
+  const remoteUsers = useRemoteUsers();
+  const { audioTracks } = useRemoteAudioTracks(remoteUsers);
+
+  // play the remote user audio tracks
+  audioTracks.forEach((track) => track.play());
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 200px)",
-        }}
-      >
-        {users.map((user) => (
-          <VideoPlayer key={user.uid} user={user} />
-        ))}
+    <section className="flex-1">
+      <div id="flex-1">
+        {
+          // Initialize each remote stream using RemoteUser component
+          remoteUsers.map((user) => (
+            <div key={user.uid} className="remote-video-container">
+              <RemoteUser user={user} />
+            </div>
+          ))
+        }
       </div>
-    </div>
+      <div id="localVideo">
+        <LocalUser
+          audioTrack={localMicrophoneTrack}
+          videoTrack={localCameraTrack}
+          cameraOn={cameraOn}
+          micOn={micOn}
+          playAudio={micOn}
+          playVideo={cameraOn}
+          className=""
+        />
+        <div>
+          {/* media-controls toolbar component - UI controling mic, camera, & connection state  */}
+          <div id="controlsToolbar">
+            <div id="mediaControls">
+              <button className="btn" onClick={() => setMic((a) => !a)}>
+                Mic
+              </button>
+              <button className="btn" onClick={() => setCamera((a) => !a)}>
+                Camera
+              </button>
+            </div>
+            <button
+              id="endConnection"
+              onClick={() => {
+                setActiveConnection(false);
+                // navigate("/");
+              }}
+            >
+              {" "}
+              Disconnect
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
-
-const VideoPlayer = ({ user }) => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    user.videoTrack.play(ref.current);
-  }, []);
-
-  return (
-    <div>
-      Uid: {user.uid}
-      <div ref={ref} style={{ width: "200px", height: "200px" }}></div>
-    </div>
-  );
-};

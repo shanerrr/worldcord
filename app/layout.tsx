@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import ThemeProvider from "@worldcord/components/providers/theme-provide";
+import ThemeProvider from "@worldcord/components/providers/theme-provider";
 import QueryProvider from "@worldcord/components/providers/query-provider";
 import ModalProvider from "@worldcord/components/providers/modal-provider";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
 
