@@ -9,6 +9,7 @@ import { ScrollArea } from "@worldcord/components/ui/scroll-area";
 
 import { cn } from "@worldcord/lib/utils";
 import { MemberAPI } from "@worldcord/apis";
+import { useQuery } from "@tanstack/react-query";
 
 import { Hash, Mic, Video } from "lucide-react";
 
@@ -24,7 +25,18 @@ export default async function ServerSidebar({
   server,
   user,
 }: ServerSidebarProps) {
-  const { members } = await MemberAPI.getAll(server.id);
+  // const { members } = await MemberAPI.getAll(server.id);
+
+  useQuery({
+    queryKey: [`server:${server.id}:channels`],
+    initialData: server.channels,
+  });
+
+  const { data } = useQuery({
+    queryKey: [`server:${server.id}`],
+    queryFn: () => MemberAPI.getAll(server.id),
+  });
+
   const { TEXT, AUDIO, VIDEO } = server.channels.reduce<
     Record<string, Channel[]>
   >((acc, cur) => {
@@ -35,7 +47,7 @@ export default async function ServerSidebar({
   }, {});
 
   const role = user
-    ? members.find((member) => member.userId === user!.id)?.role
+    ? data?.members.find((member) => member.userId === user!.id)?.role
     : null;
 
   return (
@@ -75,7 +87,7 @@ export default async function ServerSidebar({
               {
                 label: "Members",
                 type: "member",
-                data: members?.map((member) => ({
+                data: data?.members?.map((member) => ({
                   id: member.id,
                   name: "",
                   icon: (

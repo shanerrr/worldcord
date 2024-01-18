@@ -1,15 +1,11 @@
-import ServerSidebar from "@worldcord/components/server/server-sidebar";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@worldcord/components/ui/resizable";
+import ServerSidebar from "@worldcord/components/server/server-sidebar";
 
-import {
-  Server,
-  User,
-  Channel,
-} from "@prisma/client";
+import { Server, User, Channel } from "@prisma/client";
 
 type ServerMainProps = {
   server: Server & { channels: Channel[] };

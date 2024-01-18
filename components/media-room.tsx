@@ -11,12 +11,14 @@ import {
   usePublish,
   useRemoteAudioTracks,
   useRemoteUsers,
-  
 } from "agora-rtc-react";
 
-export default function MediaRoom({ channelId }: { channelId: string }) {
-  // const { channelName } = useParams(); //pull the channel name from the param
+type MediaRoomProps = {
+  channelId: string;
+  userId: string;
+};
 
+export default function MediaRoom({ channelId, userId }: MediaRoomProps) {
   // set the connection state
   const [activeConnection, setActiveConnection] = useState(true);
 
@@ -28,16 +30,14 @@ export default function MediaRoom({ channelId }: { channelId: string }) {
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
 
-  // to leave the call
-  // const navigate = useNavigate();
-
   // Join the channel
   useJoin(
     {
+      uid: userId,
       appid: process.env.NEXT_PUBLIC_AGORA_APP_ID!,
       channel: "test",
       token:
-        "007eJxTYCjJdguYvXmur+L9o88MJ81X9T9/8JRAM/NW+TWxLWsnJ4UqMJiaWKZYJlmaGBqam5qkpRlbJhumWhokJqakmKeaWqZZyjxfmtoQyMigcDKLkZEBAkF8FoaS1OISBgYAP88fYQ==",
+        "007eJxTYAje27l7+2PnaQHJnAyVkiu+tqb/MS9SPSh+KG+dqkv8xZcKDKYmlimWSZYmhobmpiZpacaWyYaplgaJiSkp5qmmlmmWDzKWpTYEMjIs+SbDwsgAgSA+C0NJanEJAwMAXSkgNw==",
     },
     activeConnection
   );

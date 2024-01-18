@@ -48,7 +48,7 @@ export default async function ChannelPage({ params }: ChannelPagePros) {
           />
         </>
       ) : (
-        <MediaRoom channelId={channel.id} />
+        <MediaRoom channelId={channel.id} userId={user.id} />
       )}
     </div>
   );

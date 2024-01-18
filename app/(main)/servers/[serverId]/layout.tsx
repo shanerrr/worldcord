@@ -30,11 +30,11 @@ export default async function ServerLayout({
 
   return (
     <main className="h-full flex flex-col">
-      <ServerMain server={server} user={user}>
-        <SocketProvider serverId={params.serverId}>
+      <SocketProvider serverId={params.serverId}>
+        <ServerMain server={server} user={user}>
           <AgoraProvider>{children}</AgoraProvider>
-        </SocketProvider>
-      </ServerMain>
+        </ServerMain>
+      </SocketProvider>
     </main>
   );
 }
