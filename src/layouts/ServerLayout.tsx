@@ -9,9 +9,11 @@ export default function ServerLayout() {
   const server = useLoaderData() as ServerWithChannelsWithMembersWithProfiles;
 
   return (
-    <main className="h-full w-full flex">
+    <main className="h-screen w-full grid grid-cols-4">
       <ServerSidebar server={server} />
-      <Outlet />
+      <div className="col-span-3">
+        <Outlet />
+      </div>
     </main>
   );
 }

@@ -6,7 +6,7 @@ export const MemberAPI = {
     memberId: string
   ): Promise<{ member: Member }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members/${memberId}`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/members/${memberId}`,
       {
         method: "GET",
       }
@@ -20,7 +20,7 @@ export const MemberAPI = {
     id: string
   ): Promise<{ members: Array<Member & { user: User }> }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/members`,
+      `${import.meta.env.VITE_API_URL}/servers/${id}/members`,
       {
         method: "GET",
       }
@@ -35,7 +35,7 @@ export const MemberAPI = {
     userId: string
   ): Promise<{ member: Member }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/members`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/members`,
       {
         method: "PUT",
         headers: {

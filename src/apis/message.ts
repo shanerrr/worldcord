@@ -11,7 +11,7 @@ export const MessageApi = {
     body: { memberId: string; content: string }
   ): Promise<{ msg: string }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels/${channelId}/messages`,
       {
         method: "POST",
         headers: {
@@ -34,12 +34,12 @@ export const MessageApi = {
     cursor: string | undefined;
   }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages?cursor=${pageParam}&batch=15`,
-      {
-        next: {
-          revalidate: 3600,
-        },
-      }
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels/${channelId}/messages?cursor=${pageParam}&batch=15`,
+      // {
+      //   next: {
+      //     revalidate: 3600,
+      //   },
+      // }
     );
 
     if (!res.ok) throw new Error("Error getting Messages!");
@@ -53,7 +53,7 @@ export const MessageApi = {
     body: { content: string }
   ): Promise<{ msg: string }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {
         method: "PATCH",
         headers: {
@@ -73,7 +73,7 @@ export const MessageApi = {
     id: string
   ): Promise<{ msg: string }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels/${channelId}/messages/${id}`,
       {
         method: "DELETE",
       }

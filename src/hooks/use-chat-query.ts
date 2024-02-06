@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { MessageApi } from "@worldcord/src/apis";
+import { MessageApi } from "@worldcord/apis";
 
 import { Message, User, Member } from "@prisma/client";
 interface ChatQueryProps {

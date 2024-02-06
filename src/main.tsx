@@ -1,12 +1,20 @@
 import React from "react";
-import "./index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import "./index.css";
+
+//layouts
+import ServerLayout, { serverLayoutLoader } from "./layouts/ServerLayout.tsx";
+
+//pages
 import App from "./App.tsx";
 import DashboardPage from "./pages/dashboard.tsx";
-import ServerLayout, { serverLayoutLoader } from "./layouts/ServerLayout.tsx";
+import ChannelPage, { channelLoader } from "./pages/channel.tsx";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -23,7 +31,9 @@ const router = createBrowserRouter([
     element: <ServerLayout />,
     children: [
       {
-        path: ":channelId",
+        path: "channels/:channelId",
+        loader: channelLoader,
+        element: <ChannelPage />,
       },
     ],
   },
@@ -31,6 +41,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>
 );

@@ -6,7 +6,7 @@ export const ChannelAPI = {
     body: { name: string; type: ChannelType }
   ): Promise<{ channel: Channel }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels`,
       {
         method: "POST",
         headers: {
@@ -25,7 +25,7 @@ export const ChannelAPI = {
     channelId: string
   ): Promise<{ channel: Channel }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${serverId}/channels/${channelId}`,
+      `${import.meta.env.VITE_API_URL}/servers/${serverId}/channels/${channelId}`,
       {
         method: "GET",
       }
@@ -37,7 +37,7 @@ export const ChannelAPI = {
   },
   getFirst: async (id: string): Promise<{ channel: Channel }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=first`,
+      `${import.meta.env.VITE_API_URL}/servers/${id}/channels?filter=first`,
       {
         method: "GET",
       }
@@ -49,7 +49,7 @@ export const ChannelAPI = {
   },
   getAll: async (id: string): Promise<{ channels: Channel[] }> => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/servers/${id}/channels?filter=all`,
+      `${import.meta.env.VITE_API_URL}/servers/${id}/channels?filter=all`,
       {
         method: "GET",
       }
