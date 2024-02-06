@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@worldcord/*": ["./*"]
+      "@worldcord/*": ["./src/*"]
     },
 
     /* Bundler mode */

@@ -1,16 +1,12 @@
 import React from "react";
+import "./index.css";
 
 import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Route,
-  Link,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import App from "./App.tsx";
-import "./index.css";
 import DashboardPage from "./pages/dashboard.tsx";
+import ServerLayout, { serverLayoutLoader } from "./layouts/ServerLayout.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,11 +18,12 @@ const router = createBrowserRouter([
     element: <DashboardPage />,
   },
   {
-    path: "servers",
+    path: "servers/:serverId",
+    loader: serverLayoutLoader,
+    element: <ServerLayout />,
     children: [
       {
-        path: ":serverId",
-        element: <App />,
+        path: ":channelId",
       },
     ],
   },
